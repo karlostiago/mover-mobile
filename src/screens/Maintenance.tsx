@@ -1,9 +1,10 @@
-import {Center, Text} from 'native-base'
+import {VStack} from 'native-base'
+import {ScreeanHeader} from "@components/ScreenHeader/ScreeanHeader";
 
 export function Maintenance() {
     return (
-        <Center flex={1}>
-            <Text color="white">Maintenace</Text>
-        </Center>
+        <VStack flex={1}>
+            <ScreeanHeader title="Histórico de manunteções"/>
+        </VStack>
     );
 }

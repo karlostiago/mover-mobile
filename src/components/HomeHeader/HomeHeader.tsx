@@ -5,7 +5,7 @@ import {TouchableOpacity} from "react-native";
 
 export function HomeHeader() {
     return (
-      <HStack bg="gray.600" pt={16} pb={5} px={8} alignItems="center">
+      <HStack bg="green.600" pt={16} pb={5} px={8} alignItems="center">
           <UserPhoto
               source={{uri: 'https://w7.pngwing.com/pngs/993/884/png-transparent-sword-of-the-berserk-guts-rage-casca-griffith-berserk.png'}}
               alt="imagem do usuario"
@@ -18,7 +18,7 @@ export function HomeHeader() {
           </Text>
 
           <Heading color="gray.100">
-              Jarmison
+              Fulano de tal
           </Heading>
 
           </VStack>
