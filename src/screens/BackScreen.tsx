@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import LogoSvg from '@assets/logo-mover.svg';
-import { VStack, Image, Center, Text, Heading, ScrollView } from 'native-base';
+import { VStack, Image, Center, Text, ScrollView } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 import { Button } from '@components/Button/Button';
-import BackgroungImg from '@assets/background.png';
+import BackgroundImg from '@assets/background.png';
+import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
 
 export function BackScreen() {
     const navigation = useNavigation<AuthNavigatorAuthProps>();
+    const [showErrorModal, setShowErrorModal] = useState(true);
 
     function handleGoBack() {
         navigation.navigate('signIn');
@@ -16,10 +18,9 @@ export function BackScreen() {
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
             <VStack flex={1} bg="gray.700" justifyContent="center">
-
                 <Image
-                    source={BackgroungImg}
-                    defaultSource={BackgroungImg}
+                    source={BackgroundImg}
+                    defaultSource={BackgroundImg}
                     alt="imagem da logo de carro"
                     resizeMode="cover"
                     position="absolute"
@@ -33,18 +34,8 @@ export function BackScreen() {
                     </Center>
 
                     <Center>
-                        <Heading
-                            color="gray.100"
-                            fontSize="xl"
-                            mb={6}
-                            fontWeight="heading"
-                            textAlign="center"
-                        >
-                            Dados do cliente não encontrados.
-                        </Heading>
-
                         <Text color="gray.100" fontSize="md" textAlign="center" mb={6}>
-                            Verifique seu CPF e tente novamente.
+                            Aconteceu algo inesperado, podemos resolver isso facilmente!
                         </Text>
                     </Center>
 
@@ -54,8 +45,13 @@ export function BackScreen() {
                         mt={10}
                         onPress={handleGoBack}
                     />
-
                 </VStack>
+
+                <ErrorModal
+                    isVisible={showErrorModal}
+                    message="Dados do cliente não encontrados. Verifique seu CPF e tente novamente."
+                    onClose={() => setShowErrorModal(false)}
+                />
             </VStack>
         </ScrollView>
     );

@@ -11,11 +11,13 @@ import { useLoadingState } from '@hooks/useLoadingState';
 
 const apiService = new ClientApiService();
 
-export interface ClientProps {
+export interface ClientPropsCredentials {
   client: {
     id: number;
     email: string;
     number: string;
+    password: string;
+    confirmPassword: string;
   };
 }
 
@@ -25,21 +27,16 @@ export function Signin() {
   const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
 
   async function handleNext() {
-    try {
-      await handleAsyncOperation(async () => {
-        const client = await apiService.checkExistingCpf(cpf);
-        if (!client) {
-          navigation.navigate('backScreen');
-          return;
-        }
-        navigation.navigate('signUp', { client } as ClientProps);
-      }, 'Erro ao verificar CPF');
-    } catch (error) {
-      console.error('Erro durante a operação assíncrona:', error);
-      navigation.navigate('backScreen');
-    }
+    await handleAsyncOperation(async () => {
+      const client = await apiService.checkExistingCpf(cpf);
+      if (!client) {
+        navigation.navigate('backScreen');
+        return;
+      }
+      navigation.navigate('signUp', { client } as ClientPropsCredentials);
+    }, 'Erro ao verificar o CPF');
   }
-  
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <VStack flex={1} bg="gray.700">

@@ -1,49 +1,43 @@
 import React, { useState } from 'react';
-import { VStack, Image, Center, Text, Heading, ScrollView, Box, Input } from 'native-base';
+import { VStack, Image, Center, Text, Heading, ScrollView, Box } from 'native-base';
+import { Input } from '@components/Input/Input';
 import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorAuthProps } from "@routes/auth.routes";
 import { Button } from "@components/Button/Button";
 import { useLoadingState } from '@hooks/useLoadingState';
-import { ClientProps } from './Signin';
+import { ClientPropsCredentials } from './Signin';
 import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
 import ClientService from '@services/clientApiService';
 
 interface SignupProps {
-    route: {
-      params?: ClientProps;
-    };
-  }
+  route: {
+    params?: ClientPropsCredentials;
+  };
+}
 
 export function ValidationCodeScreen({ route }: SignupProps) {
-
   const [validationCode, setValidationCode] = useState('');
   const navigation = useNavigation<AuthNavigatorAuthProps>();
-
   const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
-
   const clientService = new ClientService();
   const client = route.params?.client;
 
-  console.log('route.params:', route.params);
-
   async function handleAdvance() {
-    try {
-      await handleAsyncOperation(async () => {
-        if (!client) {
-          throw new Error('Client object is undefined.');
-        }
-        const response = await clientService.validateSecurityCode(client.id, client.email, validationCode);
-        if (response.success) {
-          console.log('sucesso:', JSON.stringify(response));
-        } else {
-          navigation.navigate('validationCodeScreenError');
-        }
-      }, 'Erro ao validar código');
-    } catch (error) {
-      console.error(error);
-      navigation.navigate('validationCodeScreenError');
-    }
+    await handleAsyncOperation(async () => {
+      if (!client) {
+        throw new Error('Client object is undefined.');
+      }
+
+      try {
+        await clientService.validateSecurityCode(client.id, client.email, validationCode);
+        
+          navigation.navigate('passwordSetupScreen', { client });
+        
+      } catch (error) {
+        navigation.navigate('validationCodeScreenError');
+      }
+    }, 'Erro ao validar código');
   }
 
   if (!client) {
@@ -77,8 +71,6 @@ export function ValidationCodeScreen({ route }: SignupProps) {
               placeholder="Digite o código"
               value={validationCode}
               onChangeText={(text) => setValidationCode(text)}
-              bg="white"
-              color="black"
               width="100%"
               maxWidth="400px"
               marginBottom={4}

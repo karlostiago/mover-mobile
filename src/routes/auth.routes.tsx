@@ -5,12 +5,14 @@ import { Signup } from "@screens/Signup";
 import { BackScreen } from "@screens/BackScreen";
 import { ValidationCodeScreen } from '@screens/ValidationCodeScreen';
 import { ValidationCodeScreenError } from '@screens/ValidationCodeScreenError';
+import { PasswordSetupScreen } from '@screens/PasswordSetupScreen';
 
 type AuthRoutes = {
     signIn: undefined;
     signUp: { client: { id: number; email: string; number: string; } };
     backScreen: undefined;
     validationCodeScreen: { client: { id: number; email: string; number: string; } };
+    passwordSetupScreen: { client: { id: number; password: string; confirmPassword: string; }};
     validationCodeScreenError: undefined;
 }
 
@@ -47,6 +49,10 @@ export function AuthRoutes() {
                component={ValidationCodeScreenError}
            />
 
+           <Screen
+               name='passwordSetupScreen'
+               component={PasswordSetupScreen}
+          />
        </Navigator>
    );
 }

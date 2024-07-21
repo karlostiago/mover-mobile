@@ -8,22 +8,22 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorAuthProps } from "@routes/auth.routes";
 import { Button } from "@components/Button/Button";
 import { useLoadingState } from '@hooks/useLoadingState';
-import { ClientProps } from './Signin';
+import { ClientPropsCredentials } from './Signin';
 import { useCheckboxStates } from '@hooks/useCheckboxStates';
 
 
 interface SignupProps {
   route: {
-    params?: ClientProps;
+    params?: ClientPropsCredentials;
   };
 }
 
 export function Signup({ route }: SignupProps) {
 
   const navigation = useNavigation<AuthNavigatorAuthProps>();
-  const { client } = route.params as ClientProps;
+  const { client } = route.params as ClientPropsCredentials;
 
-  const { handleAsyncOperation } = useLoadingState();
+  const { handleAsyncOperation, loading } = useLoadingState();
   const { checkboxStates, handleCheckboxChange } = useCheckboxStates({ receiveCodeByPhone: false, receiveCodeByEmail: false });
 
   const clientService = new ClientService();
@@ -46,7 +46,6 @@ export function Signup({ route }: SignupProps) {
 
       navigation.navigate('validationCodeScreen', { client });
     } catch (error) {
-      console.error('Erro ao enviar código por email:', error);
       navigation.navigate('validationCodeScreenError');
     }
   }
@@ -115,6 +114,7 @@ export function Signup({ route }: SignupProps) {
             <Button
               title='Avançar'
               onPress={sendSecurityCodeByEmail}
+              isLoading={loading}
             />
           </Center>
 

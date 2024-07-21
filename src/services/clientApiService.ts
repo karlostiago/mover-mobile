@@ -1,6 +1,7 @@
-import { ApiService } from "./apiService";
+import {ApiService} from '@services/apiService';
 
 export default class ClientService extends ApiService {
+  
   constructor() {
     super();
   }
@@ -10,9 +11,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/clients/existing-cpf/${cpf}`;
       return await this.get<any>(endpoint);
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
+      throw error;
     }
   }
 
@@ -21,9 +20,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/sender/send-security-code/${clientId}/${email}`;
       return await this.post<any>(endpoint, {});
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
+      throw error;
     }
   }
 
@@ -32,9 +29,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/sender/validate-security-code/${clientId}/${email}/${code}`;
       return await this.post<any>(endpoint, {});
     } catch (error) {
-      if (error instanceof Error && error.message) {
-        throw new Error(error.message);
-      }
+      throw error;
     }
   }
 }

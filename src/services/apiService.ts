@@ -1,15 +1,4 @@
-import axios, { AxiosResponse, AxiosError, Method } from 'axios';
 import { REACT_NATIVE_API_BASE_URL_DEVELOPMENT, REACT_NATIVE_API_BASE_URL_PRODUCTION } from '@env';
-
-interface ApiErrorData {
-  code: number;
-  date: string;
-  details: any;
-  message: string;
-  severity: string;
-  status: string;
-  time: string;
-}
 
 export class ApiService {
   private readonly baseUrl: string;
@@ -24,56 +13,60 @@ export class ApiService {
     }
   }
 
-  private handleResponse<T>(response: AxiosResponse<T>): T {
-    return response.data;
-  }
+  private getRequestOptions(method: string, data?: any): RequestInit {
+    const options: RequestInit = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
 
-  private handleApiError(error: AxiosError<ApiErrorData>): never {
-    const errorMessage = error.response?.data?.message ?? error.message;
-    const status = error.response?.status;
-
-    let errorDescription: string;
-    switch (status) {
-      case 400:
-        errorDescription = 'Erro de cliente ao comunicar com a API';
-        break;
-      case 401:
-        errorDescription = 'Erro de autorização ao comunicar com a API';
-        break;
-      case 500:
-        errorDescription = 'Erro interno no servidor ao comunicar com a API';
-        break;
-      default:
-        errorDescription = 'Erro desconhecido ao comunicar com a API';
+    if (data) {
+      options.body = JSON.stringify(data);
     }
 
-    throw new Error(`${errorDescription}: ${errorMessage}`);
+    return options;
   }
 
-  private async request<T>(method: Method, endpoint: string, data?: any): Promise<T> {
+  private async handleResponse<T>(response: Response): Promise<T> {
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      const errorMessage = Array.isArray(responseData) && responseData.length > 0
+        ? responseData.map((error: any) => error.message).join(', ')
+        : `Erro na requisição: ${response.status} - ${response.statusText}`;
+      throw new Error(errorMessage);
+    }
+
+    return responseData as T;
+  }
+
+  private async request<T>(method: string, endpoint: string, data?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const options = this.getRequestOptions(method, data);
+
     try {
-      const url = `${this.baseUrl}${endpoint}`;
-      const response = await axios({ method, url, data });
-      
-      return this.handleResponse<T>(response);
+      const response = await fetch(url, options);
+      return await this.handleResponse<T>(response);
     } catch (error) {
-      this.handleApiError(error as AxiosError<ApiErrorData>);
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      throw new Error(errorMessage);
     }
   }
 
   public get<T>(endpoint: string): Promise<T> {
-    return this.request('get', endpoint);
+    return this.request<T>('GET', endpoint);
   }
 
   public post<T>(endpoint: string, data: any): Promise<T> {
-    return this.request('post', endpoint, data);
+    return this.request<T>('POST', endpoint, data);
   }
 
   public put<T>(endpoint: string, data: any): Promise<T> {
-    return this.request('put', endpoint, data);
+    return this.request<T>('PUT', endpoint, data);
   }
 
   public delete<T>(endpoint: string): Promise<T> {
-    return this.request('delete', endpoint);
+    return this.request<T>('DELETE', endpoint);
   }
 }
