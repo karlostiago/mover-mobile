@@ -1,45 +1,47 @@
 import React, { useState } from 'react';
 import { VStack, Image, Center, Heading, ScrollView, Text, Alert } from 'native-base';
 import { Input } from '@components/Input/Input';
-import { useNavigation } from '@react-navigation/native';
-import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 import { Button } from '@components/Button/Button';
-import { useLoadingState } from '@hooks/useLoadingState';
-import { Client } from '@dtos/Client';
+import { useNavigation } from '@react-navigation/native';
 import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
 import ClientApiService from '@services/clientApiService';
+import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
+import { useLoadingState } from '@hooks/useLoadingState';
+import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 
 const apiService = new ClientApiService();
 
-export function Signin() {
+export function LoginScreen() {
   const navigation = useNavigation<AuthNavigatorAuthProps>();
   const [cpf, setCpf] = useState('');
-  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const [password, setPassword] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  async function handleNext() {
-    await handleAsyncOperation(async () => {
-      const client = await apiService.checkExistingCpf(cpf);
+  const { loading } = useLoadingState();
+
+  const handleLogin = async () => {
+    try {
+      const client = await apiService.login(cpf, password);
       if (!client) {
-        navigation.navigate('backScreen');
-        return;
+        throw new Error('CPF ou senha incorretos');
       }
-
-      navigation.navigate('signUp', { client } as { client: Client });
-    }, 'Erro ao verificar o CPF');
-  }
+      navigation.navigate('home');
+    } catch (error) {
+      setErrorMessage(error.message);
+      setShowErrorModal(true);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <VStack flex={1} bg="gray.700">
         <Image
           source={BackgroundImg}
-          defaultSource={BackgroundImg}
           alt="Imagem de fundo"
           resizeMode="cover"
-          position="absolute"
-          width="100%"
-          height="100%"
+          style={{ position: 'absolute', width: '100%', height: '100%' }}
         />
         <VStack flex={1} px={10} justifyContent="center">
           <Center my={20}>
@@ -47,10 +49,10 @@ export function Signin() {
           </Center>
           <Center>
             <Heading color="gray.100" fontSize="4xl" mb={8} fontWeight="bold">
-              Olá, digite o seu CPF
+              Acesse sua conta
             </Heading>
             <Text color="gray.100" fontSize="lg" textAlign="center" mb={6}>
-              Tem que ser o mesmo que você utilizou no cadastro
+              Informe seu CPF e senha para acessar sua conta
             </Text>
             {errorMessage && (
               <Alert w="100%" status="error" mb={6}>
@@ -64,20 +66,33 @@ export function Signin() {
             <Input
               placeholder="Digite seu CPF"
               value={cpf}
-              keyboardType="numeric"
               onChangeText={(text) => setCpf(text)}
+              keyboardType="numeric"
+            />
+            <Input
+              placeholder="Digite sua senha"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              type="password"
             />
           </Center>
           <Center mt={8}>
             <Button
-              title="Próximo"
-              size="lg"
-              onPress={handleNext}
+              title='Entrar'
+              onPress={handleLogin}
               isLoading={loading}
-            />
+            >
+              Entrar
+            </Button>
           </Center>
         </VStack>
       </VStack>
+
+      <ErrorModal
+        isVisible={showErrorModal}
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
     </ScrollView>
   );
 }

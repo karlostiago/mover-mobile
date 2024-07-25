@@ -1,23 +1,57 @@
 import React, { useState } from 'react';
-import { VStack, Image, Center, Heading, ScrollView, Box, Text } from 'native-base';
+import { VStack, Image, Center, Heading, ScrollView, Box, Text, Alert } from 'native-base';
 import { Input } from '@components/Input/Input';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 import { Button } from '@components/Button/Button';
+import { Client } from '@dtos/Client'; 
+import { useLoadingState } from '@hooks/useLoadingState';
 import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
+import ClientApiService from '@services/clientApiService';
+
+const apiService = new ClientApiService();
 
 export function PasswordSetupScreen() {
+  const route = useRoute();
+  const { client } = route.params as { client: Client }; 
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const navigation = useNavigation<AuthNavigatorAuthProps>();
 
-  function handleCreateAccount() {
+  const navigation = useNavigation<AuthNavigatorAuthProps>();
+  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+
+  async function handleCreateAccount() {
     if (password !== confirmPassword) {
-      alert('As senhas não correspondem. Tente novamente.');
+      navigation.navigate('screenPasswordError');
       return;
     }
-      navigation.navigate('signIn');
+
+       const clientRequest: Client & { password: string; confirmPassword: string } = {
+        ...client,
+        rg: client.rg || 'N/A',
+        birthDate: client.birthDate || '1990-01-01',
+        state: client.state || 'N/A',
+        cep: client.cep || 'N/A',
+        user: {
+          ...client.user,
+          password,
+        },
+        password,
+        confirmPassword,
+      };
+    
+    try {
+      await handleAsyncOperation(async () => {
+        const response = await apiService.registerClientAndUser(clientRequest);
+        if (response) {
+          navigation.navigate('login');
+        }
+      }, 'Erro ao criar a conta');
+    } catch (error) {
+      console.error('Aconteceu algo', error);
+    }
   }
 
   return (
@@ -70,9 +104,19 @@ export function PasswordSetupScreen() {
               title='Criar Conta'
               onPress={handleCreateAccount}
               bg="green.500"
-              _pressed={{ bg: 'greey.700' }}
+              _pressed={{ bg: 'green.700' }}
+              isLoading={loading}
             />
           </Center>
+          {errorMessage && (
+            <Alert w="100%" status="error" mb={6}>
+              <VStack space={2} flexShrink={1} w="100%">
+                <Text fontSize="md" color="error.600" textAlign="center">
+                  {errorMessage}
+                </Text>
+              </VStack>
+            </Alert>
+          )}
         </VStack>
       </VStack>
     </ScrollView>

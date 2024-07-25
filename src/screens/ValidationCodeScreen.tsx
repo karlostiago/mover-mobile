@@ -5,40 +5,43 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorAuthProps } from "@routes/auth.routes";
 import { Button } from "@components/Button/Button";
 import { useLoadingState } from '@hooks/useLoadingState';
-import { ClientPropsCredentials } from './Signin';
 import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
 import ClientService from '@services/clientApiService';
+import { Client } from '@dtos/Client';
 
-interface SignupProps {
+interface ValidationCodeScreenProps {
   route: {
-    params?: ClientPropsCredentials;
+    params: {
+      client: Client;
+    };
   };
 }
 
-export function ValidationCodeScreen({ route }: SignupProps) {
+export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
   const [validationCode, setValidationCode] = useState('');
   const navigation = useNavigation<AuthNavigatorAuthProps>();
+
   const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const { client } = route.params;
+
   const clientService = new ClientService();
-  const client = route.params?.client;
 
-  async function handleAdvance() {
-    await handleAsyncOperation(async () => {
-      if (!client) {
-        throw new Error('Client object is undefined.');
-      }
+ async function handleAdvance() {
+  await handleAsyncOperation(async () => {
+    if (!client) {
+      throw new Error('Client object is undefined.');
+    }
 
-      try {
-        await clientService.validateSecurityCode(client.id, client.email, validationCode);
-        
-          navigation.navigate('passwordSetupScreen', { client });
-        
-      } catch (error) {
-        navigation.navigate('validationCodeScreenError');
-      }
-    }, 'Erro ao validar código');
-  }
+    try {
+      await clientService.validateSecurityCode(client.id, client.email, validationCode);
+      navigation.navigate('passwordSetupScreen', { client });
+    } catch (error) {
+      navigation.navigate('validationCodeScreenError');
+    }
+  }, 'Erro ao validar código');
+}
+
 
   if (!client) {
     return null;
@@ -70,6 +73,7 @@ export function ValidationCodeScreen({ route }: SignupProps) {
             <Input
               placeholder="Digite o código"
               value={validationCode}
+              keyboardType="numeric"
               onChangeText={(text) => setValidationCode(text)}
               width="100%"
               maxWidth="400px"

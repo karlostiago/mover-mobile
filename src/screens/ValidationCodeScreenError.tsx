@@ -9,7 +9,7 @@ export function ValidationCodeScreenError() {
   const navigation = useNavigation<AuthNavigatorAuthProps>();
 
   function handleGoBack() {
-    navigation.navigate('signIn');
+    navigation.navigate('validationCodeScreen');
   }
 
   return (

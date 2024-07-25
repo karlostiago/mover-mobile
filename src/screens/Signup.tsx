@@ -1,27 +1,26 @@
-
-import BackgroundImg from '@assets/background.png';
-import ClientService from '@services/clientApiService';
-import LogoSvg from '@assets/logo-mover.svg';
 import React, { useEffect } from 'react';
 import { VStack, Image, Center, Text, Heading, ScrollView, Checkbox, Box } from 'native-base';
 import { useNavigation } from "@react-navigation/native";
-import { AuthNavigatorAuthProps } from "@routes/auth.routes";
 import { Button } from "@components/Button/Button";
 import { useLoadingState } from '@hooks/useLoadingState';
-import { ClientPropsCredentials } from './Signin';
+import { Client } from '@dtos/Client';
 import { useCheckboxStates } from '@hooks/useCheckboxStates';
-
+import { AuthNavigatorAuthProps } from "@routes/auth.routes";
+import BackgroundImg from '@assets/background.png';
+import LogoSvg from '@assets/logo-mover.svg';
+import ClientService from '@services/clientApiService';
 
 interface SignupProps {
   route: {
-    params?: ClientPropsCredentials;
+    params: {
+      client: Client;
+    };
   };
 }
 
 export function Signup({ route }: SignupProps) {
-
   const navigation = useNavigation<AuthNavigatorAuthProps>();
-  const { client } = route.params as ClientPropsCredentials;
+  const { client } = route.params;
 
   const { handleAsyncOperation, loading } = useLoadingState();
   const { checkboxStates, handleCheckboxChange } = useCheckboxStates({ receiveCodeByPhone: false, receiveCodeByEmail: false });
@@ -56,7 +55,7 @@ export function Signup({ route }: SignupProps) {
         <Image
           source={BackgroundImg}
           defaultSource={BackgroundImg}
-          alt="Imagem da logo de carro"
+          alt="Imagem de fundo"
           resizeMode="cover"
           position="absolute"
           width="100%"
