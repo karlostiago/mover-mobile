@@ -9,21 +9,31 @@ import ClientApiService from '@services/clientApiService';
 import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
 import { useLoadingState } from '@hooks/useLoadingState';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
+import { formatCpf } from '@utils/CpfUtils';
 
 const apiService = new ClientApiService();
 
 export function LoginScreen() {
   const navigation = useNavigation<AuthNavigatorAuthProps>();
+  
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
+
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const { loading } = useLoadingState();
 
   const handleLogin = async () => {
+    if (!cpf.trim() || !password.trim()) {
+      setErrorMessage('Por favor, preencha todos os campos.');
+      setShowErrorModal(true);
+      return;
+    }
+
     try {
-      const client = await apiService.login(cpf, password);
+      const cleanedCpf = cpf.replace(/\D/g, '');
+      const client = await apiService.login(cleanedCpf, password);
       if (!client) {
         throw new Error('CPF ou senha incorretos');
       }
@@ -54,18 +64,9 @@ export function LoginScreen() {
             <Text color="gray.100" fontSize="lg" textAlign="center" mb={6}>
               Informe seu CPF e senha para acessar sua conta
             </Text>
-            {errorMessage && (
-              <Alert w="100%" status="error" mb={6}>
-                <VStack space={2} flexShrink={1} w="100%">
-                  <Text fontSize="md" color="error.600" textAlign="center">
-                    {errorMessage}
-                  </Text>
-                </VStack>
-              </Alert>
-            )}
             <Input
               placeholder="Digite seu CPF"
-              value={cpf}
+              value={formatCpf(cpf)}
               onChangeText={(text) => setCpf(text)}
               keyboardType="numeric"
             />
@@ -81,6 +82,7 @@ export function LoginScreen() {
               title='Entrar'
               onPress={handleLogin}
               isLoading={loading}
+              isDisabled={!cpf.trim() || !password.trim()}
             >
               Entrar
             </Button>

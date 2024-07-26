@@ -76,24 +76,14 @@ export function Signup({ route }: SignupProps) {
             </Heading>
           </Center>
           <Center>
-            <Text color="gray.100" fontSize="md" textAlign="left" mb={4}>
-              Selecione por onde você quer receber o código:
-            </Text>
+              <Center>
+                <Text color="gray.100" fontSize="md" textAlign="left" mb={6} width="90%" flexWrap="nowrap">
+                          Selecione onde você quer receber o código:
+                </Text>
+             </Center>
 
             <VStack space={4} alignItems="flex-start">
-              <Box>
-                <Checkbox
-                  value="phone"
-                  colorScheme="danger"
-                  isChecked={checkboxStates.receiveCodeByPhone}
-                  onChange={() => handleCheckboxChange('phone')}
-                >
-                  <Text color="gray.100" fontSize="sm" textAlign="left">
-                    Telefone {client?.number}
-                  </Text>
-                </Checkbox>
-              </Box>
-
+            
               <Box>
                 <Checkbox
                   value="email"
@@ -102,7 +92,7 @@ export function Signup({ route }: SignupProps) {
                   onChange={() => handleCheckboxChange('email')}
                 >
                   <Text color="gray.100" fontSize="sm" textAlign="left">
-                    E-mail {client?.email}
+                    E-mail: {client?.email}
                   </Text>
                 </Checkbox>
               </Box>
@@ -112,12 +102,13 @@ export function Signup({ route }: SignupProps) {
           <Center mt={4}>
             <Button
               title='Avançar'
+              isDisabled={!checkboxStates.receiveCodeByEmail}
               onPress={sendSecurityCodeByEmail}
               isLoading={loading}
             />
           </Center>
 
-          <Center mt={4}>
+          <Center mt={10}>
             <Text color="gray.100" fontSize="sm" textAlign="left">
               Obs.: O código pode demorar alguns segundos para chegar.
             </Text>

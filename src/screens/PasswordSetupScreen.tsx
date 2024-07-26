@@ -28,20 +28,20 @@ export function PasswordSetupScreen() {
       return;
     }
 
-       const clientRequest: Client & { password: string; confirmPassword: string } = {
-        ...client,
-        rg: client.rg || 'N/A',
-        birthDate: client.birthDate || '1990-01-01',
-        state: client.state || 'N/A',
-        cep: client.cep || 'N/A',
-        user: {
-          ...client.user,
-          password,
-        },
+    const clientRequest: Client & { password: string; confirmPassword: string } = {
+      ...client,
+      rg: client.rg || 'N/A',
+      birthDate: client.birthDate || '1990-01-01',
+      state: client.state || 'N/A',
+      cep: client.cep || 'N/A',
+      user: {
+        ...client.user,
         password,
-        confirmPassword,
-      };
-    
+      },
+      password,
+      confirmPassword,
+    };
+
     try {
       await handleAsyncOperation(async () => {
         const response = await apiService.registerClientAndUser(clientRequest);
@@ -106,6 +106,7 @@ export function PasswordSetupScreen() {
               bg="green.500"
               _pressed={{ bg: 'green.700' }}
               isLoading={loading}
+              isDisabled={password.trim() === '' || confirmPassword.trim() === '' || password !== confirmPassword}
             />
           </Center>
           {errorMessage && (

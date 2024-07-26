@@ -9,17 +9,20 @@ import { Client } from '@dtos/Client';
 import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
 import ClientApiService from '@services/clientApiService';
+import { formatCpf } from '@utils/CpfUtils';
 
 const apiService = new ClientApiService();
 
 export function Signin() {
   const navigation = useNavigation<AuthNavigatorAuthProps>();
+  
   const [cpf, setCpf] = useState('');
   const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
 
   async function handleNext() {
     await handleAsyncOperation(async () => {
-      const client = await apiService.checkExistingCpf(cpf);
+      const cleanedCpf = cpf.replace(/\D/g, '');
+      const client = await apiService.checkExistingCpf(cleanedCpf);
       if (!client) {
         navigation.navigate('backScreen');
         return;
@@ -63,8 +66,9 @@ export function Signin() {
             )}
             <Input
               placeholder="Digite seu CPF"
-              value={cpf}
+              value={formatCpf(cpf)}
               keyboardType="numeric"
+              maxLength={14}
               onChangeText={(text) => setCpf(text)}
             />
           </Center>
@@ -74,6 +78,7 @@ export function Signin() {
               size="lg"
               onPress={handleNext}
               isLoading={loading}
+              isDisabled={cpf.trim() === ''}
             />
           </Center>
         </VStack>

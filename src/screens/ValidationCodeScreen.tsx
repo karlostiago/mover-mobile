@@ -9,6 +9,7 @@ import BackgroundImg from '@assets/background.png';
 import LogoSvg from '@assets/logo-mover.svg';
 import ClientService from '@services/clientApiService';
 import { Client } from '@dtos/Client';
+import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
 
 interface ValidationCodeScreenProps {
   route: {
@@ -19,29 +20,34 @@ interface ValidationCodeScreenProps {
 }
 
 export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
+  
   const [validationCode, setValidationCode] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false); 
+
+  const [errorMessage, setErrorMessage] = useState('');
   const navigation = useNavigation<AuthNavigatorAuthProps>();
 
-  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const { loading, handleAsyncOperation } = useLoadingState();
   const { client } = route.params;
 
   const clientService = new ClientService();
 
- async function handleAdvance() {
-  await handleAsyncOperation(async () => {
-    if (!client) {
-      throw new Error('Client object is undefined.');
-    }
+  async function handleAdvance() {
+    await handleAsyncOperation(async () => {
+      if (!client) {
+        throw new Error('Client object is undefined.');
+      }
 
-    try {
-      await clientService.validateSecurityCode(client.id, client.email, validationCode);
-      navigation.navigate('passwordSetupScreen', { client });
-    } catch (error) {
-      navigation.navigate('validationCodeScreenError');
-    }
-  }, 'Erro ao validar código');
-}
+      try {
+        await clientService.validateSecurityCode(client.id, client.email, validationCode);
+        navigation.navigate('passwordSetupScreen', { client });
 
+      } catch (error) {
+        setErrorMessage('Código de validação inválido.'); 
+        setShowErrorModal(true);
+      }
+    }, 'Erro ao validar código');
+  }
 
   if (!client) {
     return null;
@@ -87,15 +93,9 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
               bg="green.500"
               _pressed={{ bg: 'green.700' }}
               isLoading={loading}
+              isDisabled={validationCode.trim() === ''}
             />
           </Center>
-          {errorMessage && (
-            <Center mt={4}>
-              <Text color="red.500" fontSize="sm" textAlign="center">
-                {errorMessage}
-              </Text>
-            </Center>
-          )}
           <Center mt={4}>
             <Text color="gray.100" fontSize="sm" textAlign="center">
               Obs: O código pode demorar alguns segundos para chegar.
@@ -103,6 +103,12 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
           </Center>
         </VStack>
       </VStack>
+
+      <ErrorModal
+        isVisible={showErrorModal}
+        message={errorMessage}
+        onClose={() => setShowErrorModal(false)}
+      />
     </ScrollView>
   );
 }
