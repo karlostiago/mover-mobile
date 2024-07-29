@@ -1,15 +1,24 @@
-import { REACT_NATIVE_API_BASE_URL_DEVELOPMENT, REACT_NATIVE_API_BASE_URL_PRODUCTION } from '@env';
+import { REACT_NATIVE_API_BASE_URL_DEVELOPMENT, REACT_NATIVE_API_BASE_URL_PRODUCTION, REACT_NATIVE_API_BASE_URL_QA } from '@env';
 
 export class ApiService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = __DEV__ 
-      ? REACT_NATIVE_API_BASE_URL_DEVELOPMENT 
-      : REACT_NATIVE_API_BASE_URL_PRODUCTION;
+    
+    switch (true) {
+      case process.env.ENV_FILE === '.env.development':
+        this.baseUrl = REACT_NATIVE_API_BASE_URL_DEVELOPMENT || "http://10.0.2.2:8082/mover/api";
+        break;
+      case process.env.ENV_FILE === '.env.qa':
+        this.baseUrl = REACT_NATIVE_API_BASE_URL_QA || "https://carlo4284.c44.integrator.host/mover/api";
+        break;
+      default:
+        this.baseUrl = REACT_NATIVE_API_BASE_URL_PRODUCTION || "http://api.prod.com/mover/api";
+        break;
+    }
 
     if (!this.baseUrl) {
-      throw new Error(`Variável de ambiente ${__DEV__ ? 'REACT_NATIVE_API_BASE_URL_DEVELOPMENT' : 'REACT_NATIVE_API_BASE_URL_PRODUCTION'} não definida`);
+      throw new Error(`Variável de ambiente não definida`);
     }
   }
 
