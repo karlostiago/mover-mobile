@@ -37,7 +37,7 @@
     "extra": {
       "apiBaseUrl": {
         "development": "http://10.0.2.2:8082/mover/api",
-        "production": "http://api.prod.com/mover/api",
+        "production": "http://10.0.2.2:8082/mover/api",
         "qa": "https://carlo4284.c44.integrator.host/mover/api"
       },
       "eas": {

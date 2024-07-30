@@ -18,21 +18,23 @@ export default class ClientService extends ApiService {
 
   public async sendSecurityCode(clientId: number, email: string): Promise<any> {
     try {
-      const endpoint = `/sender/send-security-code/${clientId}/${email}`;
-      return await this.post<any>(endpoint, {});
+        const modifiedEmail = email.replace(/\.com$/, '');
+        const endpoint = `/sender/send-security-code/${clientId}/${modifiedEmail}`;
+        return await this.post<any>(endpoint, {});
     } catch (error) {
-      throw error;
+        throw error;
     }
-  }
+}
 
   public async validateSecurityCode(clientId: number, email: string, code: string): Promise<any> {
     try {
-      const endpoint = `/sender/validate-security-code/${clientId}/${email}/${code}`;
-      return await this.post<any>(endpoint, {});
+        const modifiedEmail = email.replace(/\.com$/, '');
+        const endpoint = `/sender/validate-security-code/${clientId}/${modifiedEmail}/${code}`;
+        return await this.post<any>(endpoint, {});
     } catch (error) {
-      throw error;
+        throw error;
     }
-  }
+}
 
   public async registerClientAndUser(clientRequest: Client & { password: string; confirmPassword: string }): Promise<any> {
     try {

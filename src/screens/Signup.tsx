@@ -39,8 +39,10 @@ export function Signup({ route }: SignupProps) {
         throw new Error('Parâmetros de cliente inválidos ou não definidos');
       }
 
+      const modifiedEmail = client.email.replace(/\.com$/, '');
+
       await handleAsyncOperation(async () => {
-        await clientService.sendSecurityCode(client.id, client.email);
+        await clientService.sendSecurityCode(client.id, modifiedEmail);
       }, 'Erro ao enviar código de segurança por email');
 
       navigation.navigate('validationCodeScreen', { client });
@@ -83,7 +85,6 @@ export function Signup({ route }: SignupProps) {
              </Center>
 
             <VStack space={4} alignItems="flex-start">
-            
               <Box>
                 <Checkbox
                   value="email"
