@@ -44,7 +44,7 @@ export function PasswordSetupScreen() {
 
     try {
       await handleAsyncOperation(async () => {
-        const response = await apiService.registerClientAndUser(clientRequest);
+        const response = await apiService.updateClient(client.id, clientRequest);
         if (response) {
           navigation.navigate('login');
         }
