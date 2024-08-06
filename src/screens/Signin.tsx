@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { VStack, Image, Center, Heading, ScrollView, Text, Alert } from 'native-base';
+import { Box, Center, ScrollView, Text } from 'native-base';
 import { Input } from '@components/Input/Input';
 import { useNavigation } from '@react-navigation/native';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 import { Button } from '@components/Button/Button';
 import { useLoadingState } from '@hooks/useLoadingState';
 import { Client } from '@dtos/Client';
-import BackgroundImg from '@assets/background.png';
-import LogoSvg from '@assets/logo-mover.svg';
 import ClientApiService from '@services/clientApiService';
 import { formatCpf } from '@utils/CpfUtils';
+import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
 
 const apiService = new ClientApiService();
 
@@ -18,71 +17,82 @@ export function Signin() {
   
   const [cpf, setCpf] = useState('');
   const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalMessage, setModalMessage] = useState(''); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleNext() {
+    setIsSubmitting(true);
     await handleAsyncOperation(async () => {
       const cleanedCpf = cpf.replace(/\D/g, '');
       const client = await apiService.checkExistingCpf(cleanedCpf);
       if (!client) {
-        navigation.navigate('backScreen');
+        setModalMessage('CPF inválido ou não encontrado.');
+        setModalVisible(true);
         return;
       }
 
       navigation.navigate('signUp', { client } as { client: Client });
     }, 'Erro ao verificar o CPF');
+    setIsSubmitting(false);
   }
+
+  React.useEffect(() => {
+    if (errorMessage && isSubmitting) { 
+      setModalMessage(errorMessage);
+      setModalVisible(true);
+    }
+  }, [errorMessage, isSubmitting]);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-      <VStack flex={1} bg="gray.700">
-        <Image
-          source={BackgroundImg}
-          defaultSource={BackgroundImg}
-          alt="Imagem de fundo"
-          resizeMode="cover"
-          position="absolute"
-          width="100%"
-          height="100%"
-        />
-        <VStack flex={1} px={10} justifyContent="center">
-          <Center my={20}>
-            <LogoSvg />
-          </Center>
-          <Center>
-            <Heading color="gray.100" fontSize="4xl" mb={8} fontWeight="bold">
-              Olá, digite o seu CPF
-            </Heading>
-            <Text color="gray.100" fontSize="lg" textAlign="center" mb={6}>
-              Tem que ser o mesmo que você utilizou no cadastro
-            </Text>
-            {errorMessage && (
-              <Alert w="100%" status="error" mb={6}>
-                <VStack space={2} flexShrink={1} w="100%">
-                  <Text fontSize="md" color="error.600" textAlign="center">
-                    {errorMessage}
-                  </Text>
-                </VStack>
-              </Alert>
-            )}
-            <Input
-              placeholder="Digite seu CPF"
-              value={formatCpf(cpf)}
-              keyboardType="numeric"
-              maxLength={14}
-              onChangeText={(text) => setCpf(text)}
-            />
-          </Center>
-          <Center mt={8}>
-            <Button
-              title="Próximo"
-              size="lg"
-              onPress={handleNext}
-              isLoading={loading}
-              isDisabled={cpf.trim() === ''}
-            />
-          </Center>
-        </VStack>
-      </VStack>
+      <Box flex={1} bg="green.600" px={10} pt={100}>
+        <Center>
+          <Text
+            fontSize="7xl" 
+            fontFamily="mono"
+            width={250}
+            height={87}
+            position="absolute"
+            top={0}
+            left={0}
+            color="white"
+          >
+            m
+          </Text>
+        </Center>
+
+        <Box mt={40} alignItems="flex-start">
+          <Text color="gray.100" fontSize="4xl" mb={8}>
+            Olá, digite o seu CPF
+          </Text>
+          <Text fontFamily="body" color="gray.100" fontSize="lg" mb={6}>
+            Tem que ser o mesmo que você utilizou na contratação.
+          </Text>
+          <Input
+            placeholder="Digite seu CPF"
+            value={formatCpf(cpf)}
+            keyboardType="numeric"
+            maxLength={14}
+            onChangeText={(text) => setCpf(text)}
+          />
+        </Box>
+        <Center mt={5}>
+          <Button
+            title="AVANÇAR"
+            size="lg"
+            onPress={handleNext}
+            isLoading={loading}
+            isDisabled={cpf.trim() === ''}
+          />
+        </Center>
+      </Box>
+
+      <ErrorModal 
+        isVisible={modalVisible} 
+        message={modalMessage} 
+        onClose={() => setModalVisible(false)} 
+      />
     </ScrollView>
   );
 }

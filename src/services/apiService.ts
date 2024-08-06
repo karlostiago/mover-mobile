@@ -53,7 +53,7 @@ export class ApiService {
         }
         return jsonData as T;
     } catch (error) {
-        throw new Error(`Failed to parse response: ${error.message}`);
+        throw new Error(`${error.message}`);
     }
 }
 

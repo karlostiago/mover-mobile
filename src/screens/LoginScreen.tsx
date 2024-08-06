@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { VStack, Image, Center, Heading, ScrollView, Text, Alert } from 'native-base';
+import { Box, Center, ScrollView, Text } from 'native-base';
 import { Input } from '@components/Input/Input';
 import { Button } from '@components/Button/Button';
 import { useNavigation } from '@react-navigation/native';
-import BackgroundImg from '@assets/background.png';
-import LogoSvg from '@assets/logo-mover.svg';
-import ClientApiService from '@services/clientApiService';
-import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
-import { useLoadingState } from '@hooks/useLoadingState';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
+import { useLoadingState } from '@hooks/useLoadingState';
+import ClientApiService from '@services/clientApiService';
 import { formatCpf } from '@utils/CpfUtils';
+import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
 
 const apiService = new ClientApiService();
 
@@ -18,82 +16,96 @@ export function LoginScreen() {
   
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
-
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const { loading } = useLoadingState();
+  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalMessage, setModalMessage] = useState(''); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async () => {
-    if (!cpf.trim() || !password.trim()) {
-      setErrorMessage('Por favor, preencha todos os campos.');
-      setShowErrorModal(true);
-      return;
-    }
+    setIsSubmitting(true);
+    await handleAsyncOperation(async () => {
+      if (!cpf.trim() || !password.trim()) {
+        setModalMessage('Por favor, preencha todos os campos.');
+        setModalVisible(true);
+        return;
+      }
 
-    try {
       const cleanedCpf = cpf.replace(/\D/g, '');
       const client = await apiService.login(cleanedCpf, password);
       if (!client) {
-        throw new Error('CPF ou senha incorretos');
+        setModalMessage('CPF ou senha incorretos');
+        setModalVisible(true);
+        return;
       }
+
       navigation.navigate('home');
-    } catch (error) {
-      setErrorMessage(error.message);
-      setShowErrorModal(true);
-    }
+    }, 'Erro ao fazer login');
+    setIsSubmitting(false);
   };
+
+  React.useEffect(() => {
+    if (errorMessage && isSubmitting) { 
+      setModalMessage(errorMessage);
+      setModalVisible(true);
+    }
+  }, [errorMessage, isSubmitting]);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-      <VStack flex={1} bg="gray.700">
-        <Image
-          source={BackgroundImg}
-          alt="Imagem de fundo"
-          resizeMode="cover"
-          style={{ position: 'absolute', width: '100%', height: '100%' }}
-        />
-        <VStack flex={1} px={10} justifyContent="center">
-          <Center my={20}>
-            <LogoSvg />
-          </Center>
-          <Center>
-            <Heading color="gray.100" fontSize="4xl" mb={8} fontWeight="bold">
-              Acesse sua conta
-            </Heading>
-            <Text color="gray.100" fontSize="lg" textAlign="center" mb={6}>
-              Informe seu CPF e senha para acessar sua conta
-            </Text>
-            <Input
-              placeholder="Digite seu CPF"
-              value={formatCpf(cpf)}
-              onChangeText={(text) => setCpf(text)}
-              keyboardType="numeric"
-            />
-            <Input
-              placeholder="Digite sua senha"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              type="password"
-            />
-          </Center>
-          <Center mt={8}>
-            <Button
-              title='Entrar'
-              onPress={handleLogin}
-              isLoading={loading}
-              isDisabled={!cpf.trim() || !password.trim()}
-            >
-              Entrar
-            </Button>
-          </Center>
-        </VStack>
-      </VStack>
+      <Box flex={1} bg="green.600" px={10} pt={100}>
+        <Center>
+          <Text
+            fontSize="7xl" 
+            fontFamily="mono"
+            width={250}
+            height={87}
+            position="absolute"
+            top={0}
+            left={0}
+            color="white"
+          >
+            m
+          </Text>
+        </Center>
 
-      <ErrorModal
-        isVisible={showErrorModal}
-        message={errorMessage}
-        onClose={() => setShowErrorModal(false)}
+        <Box mt={40} alignItems="flex-start">
+          <Text color="gray.100" fontSize="4xl" mb={8}>
+            Acesse sua conta
+          </Text>
+          <Text fontFamily="body" color="gray.100" fontSize="lg" mb={6}>
+            Informe seu CPF e senha para acessar sua conta
+          </Text>
+          <Input
+            placeholder="Digite seu CPF"
+            value={formatCpf(cpf)}
+            keyboardType="numeric"
+            maxLength={14}
+            onChangeText={(text) => setCpf(text)}
+            mb={4}
+          />
+          <Input
+            placeholder="Digite sua senha"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            type="password"
+            mb={6}
+          />
+        </Box>
+        <Center mt={5}>
+          <Button
+            title="Entrar"
+            size="lg"
+            onPress={handleLogin}
+            isLoading={loading}
+            isDisabled={!cpf.trim() || !password.trim()}
+          />
+        </Center>
+      </Box>
+
+      <ErrorModal 
+        isVisible={modalVisible} 
+        message={modalMessage} 
+        onClose={() => setModalVisible(false)} 
       />
     </ScrollView>
   );

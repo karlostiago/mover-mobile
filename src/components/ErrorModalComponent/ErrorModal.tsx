@@ -5,17 +5,36 @@ import * as Animatable from 'react-native-animatable';
 const ErrorModal = ({ isVisible, message, onClose }) => {
   return (
     <Modal isOpen={isVisible} onClose={onClose} safeAreaTop={true} avoidKeyboard>
-      <Animatable.View animation="slideInDown" duration={800} style={{ marginTop: 20, paddingHorizontal: 10 }}>
-        <Center flex={1}>
-          <VStack space={2} bg="gray.800" p={4} borderRadius={10} alignItems="center" minWidth={300}>
-            <Text fontSize="lg" color="error.600" mb={4}>
-              Ops!
+      <Animatable.View 
+        animation="slideInUp" 
+        duration={800} 
+        style={{ 
+          paddingHorizontal: 10, 
+          borderRadius: 8, 
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'white',
+        }}
+      >
+        <Center>
+          <VStack 
+            space={2} 
+            bg="white"
+            p={4} 
+            alignItems="center" 
+            width="100%" 
+            minHeight={150}
+          >
+            <Text fontSize="lg" color="green.500" mb={4}>
+              Ops, algo deu errado!
             </Text>
-            <Text fontSize="md" color="gray.100" textAlign="center" mb={4}>
+            <Text fontSize="md" color="black" textAlign="center">
               {message}
             </Text>
             <NativeBaseButton onPress={onClose} variant="unstyled">
-              <Text color="red.500">Fechar</Text>
+              <Text color="green.500">Fechar</Text>
             </NativeBaseButton>
           </VStack>
         </Center>

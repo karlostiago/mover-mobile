@@ -29,7 +29,10 @@
         "expo-font",
         {
           "fonts": [
-            "node_modules/@expo-google-fonts/roboto/Roboto_700Bold.ttf"
+            "node_modules/@expo-google-fonts/ubuntu/Ubuntu_400Regular.ttf",
+            "node_modules/@expo-google-fonts/ubuntu/Ubuntu_700Bold.ttf",
+            "./src/fonts/UbuntuMono-R.ttf",
+            "./src/fonts/UbuntuMono-Bold.ttf"
           ]
         }
       ]

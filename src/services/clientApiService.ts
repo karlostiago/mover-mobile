@@ -12,8 +12,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/clients/existing-cpf/${cpf}`;
       return await this.get<any>(endpoint);
     } catch (error) {
-      console.error('Error checking existing CPF:', error);
-      throw new Error('Unable to check existing CPF');
+      this.handleError(error);
     }
   }
 
@@ -23,8 +22,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/sender/send-security-code/${clientId}/${modifiedEmail}`;
       return await this.post<any>(endpoint, {});
     } catch (error) {
-      console.error('Error sending security code:', error);
-      throw new Error('Unable to send security code');
+      this.handleError(error);
     }
   }
 
@@ -34,8 +32,7 @@ export default class ClientService extends ApiService {
       const endpoint = `/sender/validate-security-code/${clientId}/${modifiedEmail}/${code}`;
       return await this.post<any>(endpoint, {});
     } catch (error) {
-      console.error('Error validating security code:', error);
-      throw new Error('Unable to validate security code');
+      this.handleError(error);
     }
   }
 
@@ -45,8 +42,7 @@ export default class ClientService extends ApiService {
         return await this.put<any>(endpoint, clientRequest);
 
     } catch (error) {
-        console.error('Error updating client:', error);
-        throw new Error('Unable to update client');
+      this.handleError(error);
     }
 }
 
@@ -55,12 +51,22 @@ export default class ClientService extends ApiService {
       const endpoint = `/users/login/${cpf}/${password}`;
       return await this.get<any>(endpoint);
     } catch (error) {
-      console.error('Error logging in:', error);
-      throw new Error('Unable to login');
+      this.handleError(error);
     }
   }
 
   private formatEmail(email: string): string {
     return email.trim().replace(/\.com$/i, '').toLowerCase();
+  }
+
+  private handleError(error: any): void {
+    // A mensagem de erro pode ser obtida do backend, se disponível
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else if (typeof error === 'string') {
+      throw new Error(error);
+    } else {
+      throw new Error('Erro desconhecido');
+    }
   }
 }

@@ -5,6 +5,7 @@ export const THEME= extendTheme({
         green: {
             700: '#00875F',
                 500: '#00B37E',
+                600: '#47B051',
         },
         gray: {
             700: '#121214',
@@ -21,8 +22,8 @@ export const THEME= extendTheme({
         }
     },
     fonts: {
-        heading: 'Roboto_700Bold',
-            body: 'Roboto_700Bold',
+        heading: 'UbuntuMono-Bold',
+            body: 'UbuntuMono-Bold',
     },
     fontSizes: {
         xs: 12,
