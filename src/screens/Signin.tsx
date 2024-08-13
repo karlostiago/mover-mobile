@@ -27,7 +27,7 @@ export function Signin() {
       const cleanedCpf = cpf.replace(/\D/g, '');
       const client = await apiService.checkExistingCpf(cleanedCpf);
       if (!client) {
-        setModalMessage('CPF inválido ou não encontrado.');
+        setModalMessage('Dados do cliente não encontrados.');
         setModalVisible(true);
         return;
       }
@@ -83,7 +83,7 @@ export function Signin() {
             size="lg"
             onPress={handleNext}
             isLoading={loading}
-            isDisabled={cpf.trim() === ''}
+            isDisabled={cpf.trim() === '' || cpf.trim().length !== 14}
           />
         </Center>
       </Box>

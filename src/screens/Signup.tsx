@@ -70,7 +70,7 @@ export function Signup({ route }: SignupProps) {
             </Heading>
 
             <Text fontFamily="body" color="gray.100" fontSize="lg" mb={6}>
-              Selecione onde você quer receber o código.
+            Selecione por onde você quer receber o código.
             </Text>
             <VStack space={4} alignItems="flex-start">
               <Box>

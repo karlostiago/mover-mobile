@@ -72,9 +72,7 @@ export function LoginScreen() {
           <Text color="gray.100" fontSize="4xl" mb={8}>
             Acesse sua conta
           </Text>
-          <Text fontFamily="body" color="gray.100" fontSize="lg" mb={6}>
-            Informe seu CPF e senha para acessar sua conta
-          </Text>
+
           <Input
             placeholder="Digite seu CPF"
             value={formatCpf(cpf)}
@@ -97,7 +95,7 @@ export function LoginScreen() {
             size="lg"
             onPress={handleLogin}
             isLoading={loading}
-            isDisabled={!cpf.trim() || !password.trim()}
+            isDisabled={!cpf.trim() || !password.trim() || cpf.trim().length !== 14 }
           />
         </Center>
       </Box>

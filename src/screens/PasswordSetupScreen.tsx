@@ -106,7 +106,7 @@ export function PasswordSetupScreen() {
             onPress={handleCreateAccount}
             _pressed={{ bg: 'grey.700' }}
             isLoading={loading}
-            isDisabled={password.trim() === '' || confirmPassword.trim() === '' || password !== confirmPassword}
+            isDisabled={password.trim() === '' || confirmPassword.trim() === '' || password !== confirmPassword }
           />
 
           {errorMessage && (
