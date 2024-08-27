@@ -49,7 +49,7 @@ export function BackScreen() {
 
                 <ErrorModal
                     isVisible={showErrorModal}
-                    message="Dados do cliente não encontrados. Verifique seu CPF e tente novamente."
+                    message="Dados do cliente não encontrados."
                     onClose={() => setShowErrorModal(false)}
                 />
             </VStack>

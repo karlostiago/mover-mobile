@@ -134,16 +134,16 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
 
         <Center mt={4}>
           {countdown > 0 ? (
-            <Text color="gray.100" fontSize="sm" textAlign="center">
+            <Text color="gray.100" fontSize="sm" textAlign="left">
               {`${countdown}s para solicitar novo reenvio de código.`}
             </Text>
           ) : (
-            <Text color="gray.100" fontSize="sm" textAlign="center"></Text>
+            <Text color="gray.100" fontSize="sm" textAlign="left"></Text>
           )}
           <Text
             color="gray.100"
             fontSize="sm"
-            textAlign="center"
+            textAlign="left"
             onPress={canResend ? sendSecurityCodeByEmail : undefined}
             underline
             style={{ cursor: 'pointer', display: canResend ? 'inline' : 'none' }}
@@ -151,6 +151,7 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
             Reenviar código de segurança
           </Text>
         </Center>
+
       </Box>
 
       <ErrorModal
