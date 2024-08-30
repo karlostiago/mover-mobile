@@ -44,7 +44,6 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
     }, 'Erro ao validar código');
   }
 
-
   useEffect(() => {
     if (countdown > 0) {
       const timer = setInterval(() => {
@@ -72,12 +71,10 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
 
     const modifiedEmail = client.email.replace(/\.com$/, '');
 
-
     setCountdown(30);
     setCanResend(false);
 
     try {
-
       await clientService.sendSecurityCode(client.id, modifiedEmail);
     } catch (error) {
       setErrorMessage('Erro ao reenviar o código.');
@@ -132,14 +129,19 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
           />
         </Center>
 
-        <Center mt={4}>
+        {/* Countdown message placed outside Center and adjusted */}
+        <Box alignItems="flex-start" mt={4} ml={8}>
           {countdown > 0 ? (
-            <Text color="gray.100" fontSize="sm" textAlign="left">
+            <Text color="gray.100" fontSize="sm">
               {`${countdown}s para solicitar novo reenvio de código.`}
             </Text>
           ) : (
-            <Text color="gray.100" fontSize="sm" textAlign="left"></Text>
+            <Text color="gray.100" fontSize="sm"></Text>
           )}
+        </Box>
+
+        {/* Centralized resend code text */}
+        <Center mt={4}>
           <Text
             color="gray.100"
             fontSize="sm"
@@ -151,7 +153,6 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
             Reenviar código de segurança
           </Text>
         </Center>
-
       </Box>
 
       <ErrorModal

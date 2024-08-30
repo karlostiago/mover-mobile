@@ -7,7 +7,7 @@ import { Client } from '@dtos/Client';
 import { useCheckboxStates } from '@hooks/useCheckboxStates';
 import { AuthNavigatorAuthProps } from "@routes/auth.routes";
 import ClientService from '@services/clientApiService';
-
+import { maskEmail } from '@utils/EmailUtils';
 interface SignupProps {
   route: {
     params: {
@@ -24,6 +24,9 @@ export function Signup({ route }: SignupProps) {
   const { checkboxStates, handleCheckboxChange } = useCheckboxStates({ receiveCodeByPhone: false, receiveCodeByEmail: false });
 
   const clientService = new ClientService();
+
+  const maskedEmail = maskEmail(client.email);
+
 
   useEffect(() => {
     if (!client) {
@@ -81,7 +84,7 @@ export function Signup({ route }: SignupProps) {
                   onChange={() => handleCheckboxChange('email')}
                 >
                   <Text color="gray.100" fontSize="sm" textAlign="left">
-                    E-mail: {client?.email}
+                    E-mail: {maskedEmail}
                   </Text>
                 </Checkbox>
               </Box>
