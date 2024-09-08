@@ -8,6 +8,7 @@ import { useLoadingState } from '@hooks/useLoadingState';
 import ClientService from '@services/clientApiService';
 import { Client } from '@dtos/Client';
 import ErrorModal from '@components/ErrorModalComponent/ErrorModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ValidationCodeScreenProps {
   route: {
@@ -37,6 +38,8 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
       try {
         await clientService.validateSecurityCode(client.id, client.email, validationCode);
         navigation.navigate('passwordSetupScreen', { client });
+        await AsyncStorage.setItem('userSession', JSON.stringify(client.email))
+
       } catch (error) {
         setErrorMessage('Código de autenticação incorreto.');
         setShowErrorModal(true);
@@ -148,7 +151,7 @@ export function ValidationCodeScreen({ route }: ValidationCodeScreenProps) {
             textAlign="left"
             onPress={canResend ? sendSecurityCodeByEmail : undefined}
             underline
-            style={{ cursor: 'pointer', display: canResend ? 'inline' : 'none' }}
+            style={{ display: canResend ? 'flex' : 'none' }}
           >
             Reenviar código de segurança
           </Text>

@@ -60,7 +60,7 @@ export default class ClientService extends ApiService {
   }
 
   private handleError(error: any): void {
-    // A mensagem de erro pode ser obtida do backend, se disponível
+    
     if (error instanceof Error) {
       throw new Error(error.message);
     } else if (typeof error === 'string') {
