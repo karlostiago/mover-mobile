@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native";
 export function HomeHeader() {
     return (
         <Box>
-            {/* Header Verde - Ajustado */}
+            
             <Box bg="green.600" pt={41} pb={6} px={12} borderBottomRadius={16} width="100%">    
                 <HStack alignItems="center" justifyContent="space-between">
                     <VStack>
@@ -43,7 +43,7 @@ export function HomeHeader() {
                         <Icon
                             as={MaterialIcons}
                             name="logout"
-                            color="gray.200"
+                            color="white"
                             size={7}
                             mt={-4} 
                         />

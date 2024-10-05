@@ -1,67 +1,47 @@
-import {HStack, Text, VStack, Heading, FlatList} from 'native-base'
-import {HomeHeader} from "@components/HomeHeader/HomeHeader";
-import {Group} from "@components/Group/Group";
-import {useState} from "react";
-import {ContractCard} from "@components/ContractCard/ContractCard";
+import { HStack, VStack } from 'native-base';
+import { HomeHeader } from "@components/HomeHeader/HomeHeader";
+import { Button } from "@components/Button/Button"; 
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 export function Home() {
-    const [groups, setGroups] = useState(['Contratos','Clientes', 'Vistórias', 'Despesas']);
-    const [contracts, setContracts] = useState(['CON-001', 'CON-002', 'CON-003 ', 'Flex1', 'Flex2', 'Flex3', 'Flex 4']);
-    const [groupSelected, setGroupSelected] = useState('Contratos');
-
     return (
         <VStack flex={1}>
-            <HomeHeader/>
+            <HomeHeader />
 
-            <FlatList
-                data={groups}
-                keyExtractor={item => item}
-                renderItem={({item} ) => (
-                    <Group
-                        name={item}
-                        isActive =  { groupSelected.toLocaleUpperCase() === item.toLocaleUpperCase()}
-                        onPress={()=> setGroupSelected(item)}
+            <VStack flex={1} justifyContent="flex-end" mb={6} px={4}>
+                <HStack
+                    justifyContent="space-between"
+                    w="full"
+                    space={2}
+                >
+                   
+                    <Button
+                        title="Contato de Emergência"
+                        variant="outline"
+                      
+                        onPress={() => {
+                            console.log('Contato de Emergência Pressionado');
+                        }}
+                        w="50%" 
+                        bg="white" 
+                        rounded="full"
+                        _pressed={{ bg: 'gray.200' }} 
                     />
-                )}
-                horizontal
-                showsHorizontalScrollIndicator = {false}
-                _contentContainerStyle={{px: 8}}
-                my={10}
-                maxH={10}
-            />
 
-            <VStack
-                flex={1}
-                px={8}
-            >
-            <HStack
-                justifyContent="space-between"
-            >
-
-            <Heading
-                color="gray.200"
-                fontSize="md"
-            >
-                Contratos
-            </Heading>
-
-            <Text
-               color="gray.200"
-               fontSize="sm"
-            >
-                {contracts.length}
-            </Text>
-
-            </HStack>
-                <FlatList
-                    data={contracts}
-                    keyExtractor={item => item}
-                    renderItem={({item}) => (
-                        <ContractCard/>
-                    )}
-                    showsVerticalScrollIndicator={false}
-                    _contentContainerStyle={{paddingBottom: 20}}
-                />
+                    {/* Botão Vistoria */}
+                    <Button
+                        title="Vistoria"
+                        variant="outline"
+                        
+                        onPress={() => {
+                            console.log('Vistoria Pressionado');
+                        }}
+                        w="50%" 
+                        bg="white"
+                        rounded="full" 
+                        _pressed={{ bg: 'gray.200' }} 
+                    />
+                </HStack>
             </VStack>
         </VStack>
     );
