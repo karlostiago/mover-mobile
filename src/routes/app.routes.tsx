@@ -1,12 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from "native-base";
-
 import HomeSvg from '@assets/home.svg';
 import ProfileSvg from '@assets/profile.svg';
 import MainTenanceSvg from '@assets/maintenance.svg';
 import SearchSvg from '@assets/search.svg';
 import ViolationSvg from '@assets/traffic-light-violation.svg';
-
 import { Infraction } from "@screens/Infraction";
 import { Inspection } from "@screens/Inspection";
 import { Maintenance } from "@screens/Maintenance";
@@ -53,7 +51,6 @@ export function AppRoutes() {
           ),
         }}
       />
-
       <Tab.Screen
         name="infraction"
         component={Infraction}
@@ -63,7 +60,6 @@ export function AppRoutes() {
           ),
         }}
       />
-
       <Tab.Screen
         name="inspection"
         component={Inspection}
@@ -73,7 +69,6 @@ export function AppRoutes() {
           ),
         }}
       />
-
       <Tab.Screen
         name="maintenance"
         component={Maintenance}
@@ -83,7 +78,6 @@ export function AppRoutes() {
           ),
         }}
       />
-
       <Tab.Screen
         name="profile"
         component={Profile}

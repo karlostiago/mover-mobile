@@ -1,36 +1,83 @@
-import {Heading, HStack, Text, VStack, Icon} from "native-base";
-import {UserPhoto} from "@components/UserPhoto/UserPhoto";
-import {MaterialIcons} from '@expo/vector-icons';
-import {TouchableOpacity} from "react-native";
+import { HStack, VStack, Icon, Box, Text } from "native-base";
+import { MaterialIcons } from '@expo/vector-icons';
+import { TouchableOpacity } from "react-native";
 
 export function HomeHeader() {
     return (
-      <HStack bg="green.600" pt={16} pb={5} px={8} alignItems="center">
-          <UserPhoto
-              source={{uri: 'https://w7.pngwing.com/pngs/993/884/png-transparent-sword-of-the-berserk-guts-rage-casca-griffith-berserk.png'}}
-              alt="imagem do usuario"
-              size={16}
-              mr={4}
-          />
-          <VStack flex={1}>
-          <Text color="gray.100" fontSize="md">
-              Olá,
-          </Text>
+        <Box>
+            {/* Header Verde - Ajustado */}
+            <Box bg="green.600" pt={41} pb={6} px={12} borderBottomRadius={16} width="100%">    
+                <HStack alignItems="center" justifyContent="space-between">
+                    <VStack>
+                       
+                        <Text
+                            fontSize="3xl"  
+                            fontFamily="mono"
+                            color="white"
+                            fontWeight="bold"
+                            mb={0} 
+                        >
+                            Mover
+                        </Text>
+                        
+                        <HStack alignItems="center" mt={2}>
+                            <Icon
+                                as={MaterialIcons}
+                                name="directions-car" 
+                                color="white"
+                                size={5}
+                                mt={2} 
+                            />
+                            <Text
+                                ml={2} 
+                                fontSize="md"
+                                color="white"
+                                mt={2}
+                            >
+                                Selecione o Carro
+                            </Text>
+                        </HStack>
+                    </VStack>
 
-          <Heading color="gray.100">
-              Fulano de tal
-          </Heading>
+                    <TouchableOpacity>
+                        <Icon
+                            as={MaterialIcons}
+                            name="logout"
+                            color="gray.200"
+                            size={7}
+                            mt={-4} 
+                        />
+                    </TouchableOpacity>
+                </HStack>
+            </Box>
 
-          </VStack>
-          <TouchableOpacity>
-              <Icon
-                  as={MaterialIcons}
-                  name="logout"
-                  color="gray.200"
-                  size={7}
-              />
-          </TouchableOpacity>
-
-      </HStack>
-    );
+            <Box
+                bg="white"
+                borderRadius={20}
+                mt={-5}
+                p={4}  
+                width="80%" 
+                alignSelf="center" 
+                height={12} 
+                shadow={2} 
+            >
+                <HStack alignItems="center" justifyContent="flex-start" height="100%">
+                    <Icon
+                        as={MaterialIcons}
+                        name="check-circle" 
+                        color="green.500"
+                        size={5}
+                    />
+                    <Text
+                        ml={1} 
+                        fontSize="md"
+                        color="green.600"
+                        mt={-1}
+                    >
+                        Placa: ABC-1234
+                    </Text>
+                </HStack>
+            </Box>
+        </Box>
+    ); 
 }
