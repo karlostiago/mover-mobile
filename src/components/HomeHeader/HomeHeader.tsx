@@ -74,7 +74,7 @@ export function HomeHeader() {
                         color="green.600"
                         mt={-1}
                     >
-                        Placa: ABC-1234
+                       Placa: PNK9D22
                     </Text>
                 </HStack>
             </Box>

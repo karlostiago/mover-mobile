@@ -11,7 +11,7 @@ export function Button({ title, variant, ...rest }: Props) {
       h={16}
       bg={variant === 'outline' ? 'transparent' : 'white'}
       borderWidth={variant === 'outline' ? 1 : 0}
-      borderColor="black"
+      borderColor="white"
       rounded="lg"
       _pressed={{
         bg: variant === 'outline' ? 'gray.600' : 'gray.200',
