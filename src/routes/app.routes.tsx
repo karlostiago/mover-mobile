@@ -1,10 +1,12 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTheme } from "native-base";
 import { Infraction } from "@screens/Infraction";
 import { Inspection } from "@screens/Inspection";
 import { Maintenance } from "@screens/Maintenance";
 import { Profile } from "@screens/Profile";
 import { Home } from "@screens/Home";
+import { LoginScreen } from '@screens/LoginScreen';
+import { AutoInspection } from '@screens/AutoInspection';
 
 type AppRoutes = {
   home: undefined;
@@ -12,9 +14,13 @@ type AppRoutes = {
   inspection: undefined;
   maintenance: undefined;
   profile: undefined;
+  login: undefined;
+  autoInspection: undefined;
 };
 
 const Tab = createBottomTabNavigator<AppRoutes>();
+
+export type AppNavigatorProps = BottomTabNavigationProp<AppRoutes>;
 
 export function AppRoutes() {
   const { sizes, colors } = useTheme();
@@ -35,6 +41,11 @@ export function AppRoutes() {
       />
 
       <Tab.Screen
+        name="login"
+        component={LoginScreen}
+      />
+
+      <Tab.Screen
         name="infraction"
         component={Infraction}
       />
@@ -47,6 +58,12 @@ export function AppRoutes() {
       <Tab.Screen
         name="maintenance"
         component={Maintenance}
+      />
+
+
+    <Tab.Screen
+        name="autoInspection"
+        component={AutoInspection}
       />
 
       <Tab.Screen

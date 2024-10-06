@@ -1,8 +1,9 @@
 import { HStack, VStack, Icon, Box, Text } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native";
-
+import { useNavigation } from '@react-navigation/native'; 
 export function HomeHeader() {
+    const navigation = useNavigation(); 
     return (
         <Box>
             
@@ -39,7 +40,7 @@ export function HomeHeader() {
                         </HStack>
                     </VStack>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('login')}>
                         <Icon
                             as={MaterialIcons}
                             name="logout"

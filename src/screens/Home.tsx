@@ -1,10 +1,12 @@
 import { HStack, VStack } from 'native-base';
 import { HomeHeader } from "@components/HomeHeader/HomeHeader";
 import { Button } from "@components/Button/Button"; 
-import { MaterialIcons } from '@expo/vector-icons'; 
 import { CarInfoCard } from "@components/CarInfoCard/CarInfoCard"; 
+import { AppNavigatorProps } from '@routes/app.routes';
+import { useNavigation } from '@react-navigation/native';
 
 export function Home() {
+    const navigation = useNavigation<AppNavigatorProps>();
     return (
         <VStack flex={1} bg="gray.100">
             <HomeHeader />
@@ -34,13 +36,12 @@ export function Home() {
                         _pressed={{ bg: 'gray.200' }} 
                     />
 
-                    {/* Botão Vistoria */}
                     <Button
                         title="Vistoria"
                         variant="outline"
                         onPress={() => {
-                            console.log('Vistoria Pressionado');
-                        }}
+                            navigation.navigate('inspection');
+                          }}
                         w="48%" 
                         bg="white"
                         rounded="full" 
