@@ -19,7 +19,7 @@ export function AutoInspection() {
                     <Text fontSize="4xl" color="white" fontWeight="bold">
                         Olá, André
                     </Text>
-                    <Text fontSize="lg" color="gray.100" textAlign="center" mt={2}>
+                    <Text fontSize="lg" color="white" textAlign="center" mt={2}>
                         Seja bem-vindo a Auto-inspeção.
                     </Text>
                 </Center>
