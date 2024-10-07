@@ -8,7 +8,7 @@ export function AutoInspection() {
     const navigation = useNavigation<AppNavigatorProps>();
 
     function handleStartInspection() {
-        console.log('Handle de auto inspeção....');
+        navigation.navigate('photoAutoInspection'); 
 
     }
 

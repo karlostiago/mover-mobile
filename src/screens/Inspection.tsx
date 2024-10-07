@@ -9,7 +9,6 @@ export function Inspection() {
     const [hasInspection, setHasInspection] = useState(false);
 
     function handleNewInspection() {
-        console.log('Iniciar nova vistoria');
         navigation.navigate('autoInspection'); 
     }
 
