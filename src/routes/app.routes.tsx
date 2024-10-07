@@ -8,6 +8,7 @@ import { Home } from "@screens/Home";
 import { LoginScreen } from '@screens/LoginScreen';
 import { AutoInspection } from '@screens/AutoInspection';
 import { PhotoAutoInspection } from '@screens/PhotoAutoInspection';
+import { PhotoAutoInspectionFinished } from '@screens/PhotoAutoInspectionFinished';
 
 type AppRoutes = {
   home: undefined;
@@ -18,6 +19,7 @@ type AppRoutes = {
   login: undefined;
   autoInspection: undefined;
   photoAutoInspection: undefined;
+  photoAutoInspectionFinished: undefined;
 };
 
 const Tab = createBottomTabNavigator<AppRoutes>();
@@ -42,9 +44,14 @@ export function AppRoutes() {
         component={Home}
       />
 
-    <Tab.Screen
+     <Tab.Screen
         name="photoAutoInspection"
         component={PhotoAutoInspection}
+      />
+
+     <Tab.Screen
+        name="photoAutoInspectionFinished"
+        component={PhotoAutoInspectionFinished}
       />
 
       <Tab.Screen

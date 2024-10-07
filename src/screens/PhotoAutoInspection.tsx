@@ -21,7 +21,7 @@ export function PhotoAutoInspection() {
     const [photos, setPhotos] = useState({});
 
     const handleStartInspection = () => {
-        console.log('Iniciando a auto inspeção...');
+        navigation.navigate('photoAutoInspectionFinished'); 
     };
 
 
