@@ -2,7 +2,7 @@ import { Client } from '@dtos/Client';
 import { ApiService } from '@services/apiService';
 
 export default class ClientService extends ApiService {
-  
+
   constructor() {
     super();
   }
@@ -38,13 +38,28 @@ export default class ClientService extends ApiService {
 
   public async updateClient(clientId: number, clientRequest: Client & { password: string; confirmPassword: string }): Promise<any> {
     try {
-        const endpoint = `/clients/${clientId}`;
-        return await this.put<any>(endpoint, clientRequest);
+      const endpoint = `/clients/${clientId}`;
+      return await this.put<any>(endpoint, clientRequest);
 
     } catch (error) {
       this.handleError(error);
     }
+  }
+
+  public async getContractByClientId(clientId: number): Promise<any | null> {
+    try {
+        const endpoint = `/contracts/contract-by/${clientId}`;
+        const response = await this.get<any>(endpoint);
+
+        return response; 
+    } catch (error) {
+        console.log('Erro ao buscar contrato:', error);
+        this.handleError(error);
+        return null;
+    }
 }
+
+
 
   public async login(cpf: string, password: string): Promise<any> {
     try {
@@ -60,7 +75,7 @@ export default class ClientService extends ApiService {
   }
 
   private handleError(error: any): void {
-    
+
     if (error instanceof Error) {
       throw new Error(error.message);
     } else if (typeof error === 'string') {

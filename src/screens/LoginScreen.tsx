@@ -13,14 +13,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const apiService = new ClientApiService();
 
 export function LoginScreen() {
-  const navigation = useNavigation<AuthNavigatorAuthProps>();
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
-  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
   const [modalVisible, setModalVisible] = useState(false); 
   const [modalMessage, setModalMessage] = useState(''); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { loading, errorMessage, handleAsyncOperation } = useLoadingState();
+  const navigation = useNavigation<AuthNavigatorAuthProps>();
+  
   const handleLogin = async () => {
     setIsSubmitting(true);
     await handleAsyncOperation(async () => {
@@ -44,6 +44,7 @@ export function LoginScreen() {
       await AsyncStorage.setItem('@auth_token', client.email);
       await AsyncStorage.setItem('@session_expiry', expiryTime);
       await AsyncStorage.setItem('@has_logged_in', 'true');
+      await AsyncStorage.setItem('@user_cpf', cleanedCpf);
 
       navigation.navigate('home');
     }, 'Erro ao fazer login');
@@ -58,23 +59,77 @@ export function LoginScreen() {
   }, [errorMessage, isSubmitting]);
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-      <Box flex={1} bg="green.600" px={10} pt={100}>
+    <ScrollView 
+       contentContainerStyle={{ flexGrow: 1 }} 
+       showsVerticalScrollIndicator={false}
+    >
+
+      <Box 
+        flex={1} 
+        bg="green.600" 
+        px={10} 
+        pt={100}
+      >
         <Center>
-          <Text fontSize="7xl" fontFamily="mono" width={250} height={87} position="absolute" top={0} left={0} color="white">
+          <Text 
+          fontSize="7xl" 
+          fontFamily="mono" 
+          width={250} 
+          height={87} 
+          position="absolute" 
+          top={0} 
+          left={0} 
+          color="white"
+          >
             m
           </Text>
         </Center>
-        <Box mt={40} alignItems="flex-start">
-          <Text color="gray.100" fontSize="4xl" mb={8}>Acesse sua conta</Text>
-          <Input placeholder="Digite seu CPF" value={formatCpf(cpf)} keyboardType="numeric" maxLength={14} onChangeText={(text) => setCpf(text)} mb={4} />
-          <Input placeholder="Digite sua senha" value={password} onChangeText={(text) => setPassword(text)} type="password" mb={6} />
+        <Box mt={40} 
+             alignItems="flex-start">
+
+          <Text 
+            color="gray.100" 
+            fontSize="4xl" 
+            mb={8}> Acesse sua conta
+          </Text>
+
+          <Input 
+            placeholder="Digite seu CPF" 
+            value={formatCpf(cpf)} 
+            keyboardType="numeric" 
+            maxLength={14} 
+            onChangeText={(text) => setCpf(text)} 
+            mb={4} 
+            />
+
+          <Input 
+            placeholder="Digite sua senha" 
+            value={password} 
+            onChangeText={(text) => setPassword(text)} 
+            type="password" 
+            mb={6} 
+          />
+
         </Box>
         <Center mt={5}>
-          <Button title="Entrar" size="lg" onPress={handleLogin} isLoading={loading} isDisabled={!cpf.trim() || !password.trim() || cpf.trim().length !== 14 } />
+
+          <Button 
+          title="Entrar" 
+          size="lg" 
+          onPress={handleLogin} 
+          isLoading={loading} 
+          isDisabled={!cpf.trim() || !password.trim() || cpf.trim().length !== 14 } 
+          />
+
         </Center>
       </Box>
-      <ErrorModal isVisible={modalVisible} message={modalMessage} onClose={() => setModalVisible(false)} />
+
+      <ErrorModal 
+        isVisible={modalVisible} 
+        message={modalMessage} 
+        onClose={() => setModalVisible(false)} 
+      />
+
     </ScrollView>
   );
 }
