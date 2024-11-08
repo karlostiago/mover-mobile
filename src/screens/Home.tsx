@@ -63,7 +63,10 @@ export function Home() {
 
     return (
         <VStack flex={1} bg="gray.100">
-            <HomeHeader />
+            <HomeHeader vehicleInfo={{
+                vehicleModel: '',
+                licensePlate: vehicleInfo.licensePlate
+            }} />
             
             <VStack flex={1} justifyContent="center" alignItems="center" mt={-10}>
                

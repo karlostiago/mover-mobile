@@ -2,46 +2,68 @@ import { HStack, VStack, Icon, Box, Text, Pressable } from "native-base";
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/native';
-import { LayoutAnimation, Platform, UIManager } from "react-native";
-import { CarSelectModal } from '@components/CarSelectModal/CarSelectModal'; // Importe o componente do modal
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ClientApiService from '@services/clientApiService';
 
-// Habilitar animações no Android
-if (Platform.OS === 'android') {
-    if (UIManager.setLayoutAnimationEnabledExperimental) {
-        UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
-}
+const apiService = new ClientApiService();
+const contractService = new ClientApiService();
 
-export function HomeHeader() {
+export function HomeHeader({ vehicleInfo }: { vehicleInfo: { vehicleModel: string, licensePlate: string } }) {
     const navigation = useNavigation();
     
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
-    
-    const cars = [
-        { id: '1', plate: 'PNK9D22' },
-        { id: '2', plate: 'ABC1234' },
-        { id: '3', plate: 'XYZ5678' }
-    ];
-
-    useEffect(() => {
-        if (!selectedCar) {
-            setSelectedCar(cars[0]);
-        }
-    }, [selectedCar]);
+    const [clientData, setClientData] = useState<any>(null);
+    const [contract, setContract] = useState<any>(null);
 
     const handleCarSelect = (car) => {
         setSelectedCar(car);
-        setIsModalOpen(false); 
     };
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen); 
+    // Effect to fetch client and contract data
+    useEffect(() => {
+        const fetchClientData = async () => {
+            try {
+                const cpf = await AsyncStorage.getItem('@user_cpf');
+                
+                if (cpf) {
+                    const response = await apiService.checkExistingCpf(cpf);
+                    if (response) {
+                        setClientData(response);
+        
+                        const contractResponse = await contractService.getContractByClientId(response.id);
+                        if (contractResponse && contractResponse.id) {
+                            setContract(contractResponse);
+                        } else {
+                            console.log('Contrato não encontrado ou estrutura inesperada');
+                        }
+                    } else {
+                        console.log('Cliente não encontrado');
+                    }
+                } else {
+                    console.log('CPF não encontrado');
+                }
+            } catch (err) {
+                console.log('Erro ao buscar os dados do cliente ou contrato', err);
+            }
+        };
+
+        fetchClientData();
+    }, []);
+
+
+    const getVehicleInfo = (vehicleInfo: string) => {
+        const parts = vehicleInfo.split(" - ");
+        const vehicleName = parts[0]; 
+        const vehicleModel = parts[1]; 
+        const licensePlate = parts[2]; 
+
+        return { vehicleName, vehicleModel, licensePlate };
     };
+
+    const vehicleInfoDetails = contract ? getVehicleInfo(contract.vehicleName) : { vehicleName: '', vehicleModel: '', licensePlate: '' };
 
     return (
         <Box>
-          
             <Box bg="green.600" pt={41} pb={6} px={12} borderBottomRadius={16} width="100%">    
                 <HStack alignItems="center" justifyContent="space-between">
                     <VStack>
@@ -55,7 +77,6 @@ export function HomeHeader() {
                             Mover
                         </Text>
                         
-                      
                         <HStack alignItems="center" mt={2}>
                             <Icon
                                 as={MaterialIcons}
@@ -75,7 +96,6 @@ export function HomeHeader() {
                         </HStack>
                     </VStack>
 
-                  
                     <Pressable onPress={() => navigation.navigate('login')}>
                         <Icon
                             as={MaterialIcons}
@@ -88,45 +108,55 @@ export function HomeHeader() {
                 </HStack>
             </Box>
 
-           
-            <Pressable onPress={toggleModal}>
-                {({ isPressed }) => (
-                    <Box
-                        bg={isPressed ? "gray.100" : "white"}  
-                        borderRadius={20}
-                        mt={-5}
-                        p={4}  
-                        width="80%" 
-                        alignSelf="center" 
-                        height={12} 
-                        shadow={2} 
+            <Box 
+                bg="white"
+                borderRadius={20}
+                mt={-5}
+                p={4}  
+                width="80%" 
+                alignSelf="center" 
+                height={12} 
+                shadow={2} 
+            >
+                <HStack alignItems="center" justifyContent="flex-start" height="100%">
+                    <Icon
+                        as={MaterialIcons}
+                        name="check-circle" 
+                        color="green.500"
+                        size={5}
+                    />
+                    <Text
+                        ml={1} 
+                        fontSize="md"
+                        color="green.600"
+                        mt={-1}
                     >
-                        <HStack alignItems="center" justifyContent="flex-start" height="100%">
-                            <Icon
-                                as={MaterialIcons}
-                                name="check-circle" 
-                                color="green.500"
-                                size={5}
-                            />
-                            <Text
-                                ml={1} 
-                                fontSize="md"
-                                color="green.600"
-                                mt={-1}
-                            >
-                                Placa: {selectedCar ? selectedCar.plate : 'Nenhum carro selecionado'}
-                            </Text>
-                        </HStack>
-                    </Box>
-                )}
-            </Pressable>
+                        Placa: {vehicleInfoDetails ? vehicleInfoDetails.licensePlate : 'Nenhum carro selecionado'}
+                    </Text>
+                </HStack>
+            </Box>
 
-            <CarSelectModal 
-                isOpen={isModalOpen} 
-                onClose={toggleModal} 
-                cars={cars} 
-                onCarSelect={handleCarSelect} 
-            />
+            <Box mt={4} px={4}>
+               
+                <VStack mt={2}>
+                    {contract?.vehicles?.map((car, index) => (
+                        <Pressable 
+                            key={index} 
+                            onPress={() => handleCarSelect(car)} 
+                            bg={selectedCar?.id === car.id ? "green.100" : "white"}
+                            p={3} 
+                            borderRadius={8}
+                            mb={2}
+                            shadow={2}
+                        >
+                            <HStack justifyContent="space-between" alignItems="center">
+                                <Text fontSize="md" color="green.600">{car.licensePlate}</Text>
+                                <Text fontSize="md" color="gray.600">{car.vehicleModel}</Text>
+                            </HStack>
+                        </Pressable>
+                    ))}
+                </VStack>
+            </Box>
         </Box>
     );
 }

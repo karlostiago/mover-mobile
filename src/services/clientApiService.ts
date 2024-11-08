@@ -59,8 +59,6 @@ export default class ClientService extends ApiService {
     }
 }
 
-
-
   public async login(cpf: string, password: string): Promise<any> {
     try {
       const endpoint = `/users/login/${cpf}/${password}`;
