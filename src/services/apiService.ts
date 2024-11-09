@@ -1,5 +1,6 @@
 import { REACT_NATIVE_API_BASE_URL_DEVELOPMENT, REACT_NATIVE_API_BASE_URL_PRODUCTION, REACT_NATIVE_API_BASE_URL_QA } from '@env';
 import Constants from 'expo-constants';
+import axios from 'axios';
 
 export class ApiService {
   private readonly baseUrl: string;
@@ -40,9 +41,8 @@ export class ApiService {
     return options;
   }
 
-  private async handleResponse<T>(response: Response): Promise<T> {
+  private async handleJsonResponse<T>(response: Response): Promise<T> {
     const responseData = await response.text();
-
     try {
         const jsonData = JSON.parse(responseData);
         if (!response.ok) {
@@ -55,8 +55,24 @@ export class ApiService {
     } catch (error) {
         throw new Error(`${error.message}`);
     }
-}
+  }
 
+  private async handleAxiosResponse<T>(response: any): Promise<T> {
+    const responseData = response.data;
+    if (response.status >= 200 && response.status < 300) {
+      return responseData as T;
+    }
+
+    let errorMessage = 'Erro desconhecido';
+    if (responseData) {
+      if (Array.isArray(responseData) && responseData.length > 0) {
+        errorMessage = responseData.map((error: any) => error.message).join(', ');
+      } else if (responseData.message) {
+        errorMessage = responseData.message;
+      }
+    }
+    throw new Error(`Erro na requisição: ${response.status} - ${errorMessage}`);
+  }
 
   private async request<T>(method: string, endpoint: string, data?: any): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
@@ -64,7 +80,30 @@ export class ApiService {
 
     try {
       const response = await fetch(url, options);
-      return await this.handleResponse<T>(response);
+      return await this.handleJsonResponse<T>(response);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      throw new Error(errorMessage);
+    }
+  }
+
+  private async requestWithFileUpload<T>(method: string, endpoint: string, data?: any): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = { 'Content-Type': 'multipart/form-data' };
+
+    const options: any = {
+      method,
+      url,
+      headers,
+    };
+
+    if (data) {
+      options.data = data;
+    }
+
+    try {
+      const response = await axios(options);
+      return await this.handleAxiosResponse<T>(response);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       throw new Error(errorMessage);
@@ -77,6 +116,10 @@ export class ApiService {
 
   public post<T>(endpoint: string, data: any): Promise<T> {
     return this.request<T>('POST', endpoint, data);
+  }
+
+  public postWithFile<T>(endpoint: string, data: FormData): Promise<T> {
+    return this.requestWithFileUpload<T>('POST', endpoint, data);
   }
 
   public put<T>(endpoint: string, data: any): Promise<T> {

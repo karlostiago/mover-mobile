@@ -19,7 +19,6 @@ export function HomeHeader({ vehicleInfo }: { vehicleInfo: { vehicleModel: strin
         setSelectedCar(car);
     };
 
-    // Effect to fetch client and contract data
     useEffect(() => {
         const fetchClientData = async () => {
             try {

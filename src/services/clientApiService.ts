@@ -1,5 +1,13 @@
 import { Client } from '@dtos/Client';
 import { ApiService } from '@services/apiService';
+type CustomFile = {
+  uri: string;
+  name: string;
+  type: string;
+  lastModified?: number;
+  size?: number;
+  webkitRelativePath?: string;
+};
 
 export default class ClientService extends ApiService {
 
@@ -48,16 +56,16 @@ export default class ClientService extends ApiService {
 
   public async getContractByClientId(clientId: number): Promise<any | null> {
     try {
-        const endpoint = `/contracts/contract-by/${clientId}`;
-        const response = await this.get<any>(endpoint);
+      const endpoint = `/contracts/contract-by/${clientId}`;
+      const response = await this.get<any>(endpoint);
 
-        return response; 
+      return response;
     } catch (error) {
-        console.log('Erro ao buscar contrato:', error);
-        this.handleError(error);
-        return null;
+      console.log('Erro ao buscar contrato:', error);
+      this.handleError(error);
+      return null;
     }
-}
+  }
 
   public async login(cpf: string, password: string): Promise<any> {
     try {
@@ -68,6 +76,25 @@ export default class ClientService extends ApiService {
     }
   }
 
+  public async startInspection(inspectionId: number, photos: CustomFile[]): Promise<any> {
+    try {
+      const endpoint = `/inspections/${inspectionId}/start`;
+      const formData = new FormData();
+
+      photos.forEach((photo, index) => {
+        formData.append('photos', {
+          uri: photo.uri,
+          type: photo.type,
+          name: photo.name,
+        } as any);
+      });
+  
+      return await this.postWithFile<any>(endpoint, formData);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+  
   private formatEmail(email: string): string {
     return email.trim().replace(/\.com$/i, '').toLowerCase();
   }

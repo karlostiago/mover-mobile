@@ -18,8 +18,8 @@ type AppRoutes = {
   profile: undefined;
   login: undefined;
   autoInspection: undefined;
-  photoAutoInspection: undefined;
-  photoAutoInspectionFinished: undefined;
+  photoAutoInspection: { contract: any };
+  photoAutoInspectionFinished: { contractId: number };
 };
 
 const Tab = createBottomTabNavigator<AppRoutes>();
