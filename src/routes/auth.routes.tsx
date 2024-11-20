@@ -10,6 +10,11 @@ import { ScreenPasswordError } from '@screens/ScreenPasswordError';
 import { Client } from '@dtos/Client';
 import { LoginScreen } from '@screens/LoginScreen';
 import { Home } from '@screens/Home';
+import { Inspection } from '@screens/Inspection';
+import { ContractDTO } from '@dtos/Contract';
+import { AutoInspection } from '@screens/AutoInspection';
+import { PhotoAutoInspection } from '@screens/PhotoAutoInspection';
+import { PhotoAutoInspectionFinished } from '@screens/PhotoAutoInspectionFinished';
 
 type AuthRoutes = {
     signIn: { client: Client };
@@ -21,6 +26,10 @@ type AuthRoutes = {
     passwordSetupScreen: { client: Client }; 
     login: undefined
     home: undefined;
+    inspection: { contract: ContractDTO };
+    autoInspection:  { contract: ContractDTO };
+    photoAutoInspection: { contract: any };
+    photoAutoInspectionFinished: { contractId: number };
 };
 
 export type AuthNavigatorAuthProps = NativeStackNavigationProp<AuthRoutes>;
@@ -39,6 +48,10 @@ export function AuthRoutes() {
             <Screen name='screenPasswordError' component={ScreenPasswordError} />
             <Screen name='login' component={LoginScreen} />
             <Screen name='home' component={Home} />
+            <Screen name='inspection' component={Inspection} />
+            <Screen name='autoInspection' component={AutoInspection} />
+            <Screen name='photoAutoInspection' component={PhotoAutoInspection} />
+            <Screen name='photoAutoInspectionFinished' component={PhotoAutoInspectionFinished} />
        </Navigator>
    );
 }

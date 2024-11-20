@@ -5,11 +5,13 @@ import { useNavigation } from '@react-navigation/native';
 import { AppNavigatorProps } from '@routes/app.routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
+import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 
 const apiService = new ClientApiService();
 
 export function AutoInspection() {
     const navigation = useNavigation<AppNavigatorProps>();
+    const navigationProp = useNavigation<AuthNavigatorAuthProps>(); 
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -33,7 +35,7 @@ export function AutoInspection() {
             } catch (err) {
                 console.log('Erro ao buscar os dados do cliente:', err);
             } finally {
-                setLoading(false); // Stop loading after data is fetched
+                setLoading(false);
             }
         };
 
@@ -42,7 +44,7 @@ export function AutoInspection() {
 
     function handleStartInspection() {
         if (contract) {
-            navigation.navigate('photoAutoInspection', { contract });
+            navigationProp.navigate('photoAutoInspection', { contract });
         } else {
             console.log('Contract não encontrado');
         }

@@ -9,15 +9,16 @@ import { LoginScreen } from '@screens/LoginScreen';
 import { AutoInspection } from '@screens/AutoInspection';
 import { PhotoAutoInspection } from '@screens/PhotoAutoInspection';
 import { PhotoAutoInspectionFinished } from '@screens/PhotoAutoInspectionFinished';
+import { ContractDTO } from '@dtos/Contract';
 
 type AppRoutes = {
   home: undefined;
   infraction: undefined;
-  inspection: { contract: any };
+  inspection: { contract: ContractDTO };
   maintenance: undefined;
   profile: undefined;
   login: undefined;
-  autoInspection: undefined;
+  autoInspection:  { contract: ContractDTO };
   photoAutoInspection: { contract: any };
   photoAutoInspectionFinished: { contractId: number };
 };
@@ -25,6 +26,7 @@ type AppRoutes = {
 const Tab = createBottomTabNavigator<AppRoutes>();
 
 export type AppNavigatorProps = BottomTabNavigationProp<AppRoutes>;
+
 
 export function AppRoutes() {
   const { sizes, colors } = useTheme();
@@ -64,10 +66,7 @@ export function AppRoutes() {
         component={Infraction}
       />
 
-      <Tab.Screen
-        name="inspection"
-        component={Inspection}
-      />
+<Tab.Screen name="inspection" component={Inspection} />
 
       <Tab.Screen
         name="maintenance"

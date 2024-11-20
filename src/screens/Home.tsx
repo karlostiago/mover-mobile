@@ -3,16 +3,16 @@ import { HStack, VStack, Text } from 'native-base';
 import { HomeHeader } from "@components/HomeHeader/HomeHeader";
 import { Button } from "@components/Button/Button"; 
 import { CarInfoCard } from "@components/CarInfoCard/CarInfoCard"; 
-import { AppNavigatorProps } from '@routes/app.routes';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
+import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 
 const apiService = new ClientApiService();
 const contractService = new ClientApiService();
 
 export function Home() {
-    const navigation = useNavigation<AppNavigatorProps>();
+    const navigation = useNavigation<AuthNavigatorAuthProps>(); 
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -61,6 +61,13 @@ export function Home() {
 
     const vehicleInfo = contract ? getVehicleInfo(contract.vehicleName) : { vehicleName: '', vehicleModel: '', licensePlate: '' };
 
+    const handleVistoriaPress = () => {
+        if (contract) {
+            navigation.navigate('inspection', { contract });
+        } else {
+            console.log('Contrato não carregado');
+        }
+    };
     return (
         <VStack flex={1} bg="gray.100">
             <HomeHeader vehicleInfo={{
@@ -101,13 +108,7 @@ export function Home() {
                     <Button
                         title="Vistoria"
                         variant="outline"
-                        onPress={() => {
-                            if (contract) {
-                                navigation.navigate('inspection', { contract });
-                            } else {
-                                console.log('Contrato não carregado.');
-                            }
-                        }}
+                        onPress={handleVistoriaPress}
                         w="48%" 
                         bg={contract ? "white" : "gray.300"}
                         isDisabled={!contract}

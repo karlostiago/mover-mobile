@@ -5,13 +5,14 @@ import { Button } from '@components/Button/Button';
 import { AppNavigatorProps } from '@routes/app.routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
+import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 
 const apiService = new ClientApiService();
 const contractService = new ClientApiService();
 
 export function Inspection() {
     const navigation = useNavigation<AppNavigatorProps>();
-    const [hasInspection, setHasInspection] = useState(false);
+    const navigationProp = useNavigation<AuthNavigatorAuthProps>(); 
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
 
@@ -30,7 +31,9 @@ export function Inspection() {
                         const contractResponse = await contractService.getContractByClientId(response.id);
                         if (contractResponse) {
                             setContract(contractResponse);
-                            console.log('Contrato encontrado:', contractResponse);
+                            
+                            await AsyncStorage.setItem('@contract_data', JSON.stringify(contractResponse));
+                            console.log('Contrato encontrado e salvo:', contractResponse);
                         } else {
                             console.log('Contrato não encontrado ou estrutura inesperada');
                         }
@@ -49,7 +52,11 @@ export function Inspection() {
     }, []);
 
     const handleNewInspection = () => {
-        navigation.navigate('autoInspection');
+        if (contract) {
+            navigationProp.navigate('autoInspection', { contract });
+        } else {
+            console.log('Contrato não encontrado');
+        }
     };
 
     return (
