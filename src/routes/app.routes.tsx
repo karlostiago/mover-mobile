@@ -13,7 +13,7 @@ import { PhotoAutoInspectionFinished } from '@screens/PhotoAutoInspectionFinishe
 type AppRoutes = {
   home: undefined;
   infraction: undefined;
-  inspection: undefined;
+  inspection: { contract: any };
   maintenance: undefined;
   profile: undefined;
   login: undefined;

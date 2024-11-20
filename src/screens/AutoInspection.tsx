@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { VStack, Center, Text, ScrollView, Box, Image } from 'native-base';
+import React, { useEffect, useState } from 'react';
+import { VStack, Center, Text, ScrollView, Box, Image, Spinner } from 'native-base';
 import { Button } from '@components/Button/Button'; 
 import { useNavigation } from '@react-navigation/native';
 import { AppNavigatorProps } from '@routes/app.routes';
@@ -12,6 +12,7 @@ export function AutoInspection() {
     const navigation = useNavigation<AppNavigatorProps>();
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchClientData = async () => {
@@ -31,6 +32,8 @@ export function AutoInspection() {
                 }
             } catch (err) {
                 console.log('Erro ao buscar os dados do cliente:', err);
+            } finally {
+                setLoading(false); // Stop loading after data is fetched
             }
         };
 
@@ -51,9 +54,13 @@ export function AutoInspection() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
             <Box flex={1} bg="green.600" px={10} pt={50}>
                 <Center>
-                    <Text fontSize="4xl" color="white" fontWeight="bold" isTruncated maxW="90%">
-                        Olá, {clientData ? getFirstName(clientData.name) : 'Carregando...'}
-                    </Text>
+                    {loading ? (
+                        <Spinner size="lg" color="white" />
+                    ) : (
+                        <Text fontSize="4xl" color="white" fontWeight="bold" isTruncated maxW="90%">
+                            Olá, {clientData ? getFirstName(clientData.name) : '...'}
+                        </Text>
+                    )}
                     <Text fontSize="lg" color="white" textAlign="center" mt={2}>
                         Seja bem-vindo a Auto-inspeção.
                     </Text>

@@ -1,5 +1,6 @@
 import { Client } from '@dtos/Client';
 import { ApiService } from '@services/apiService';
+
 type CustomFile = {
   uri: string;
   name: string;

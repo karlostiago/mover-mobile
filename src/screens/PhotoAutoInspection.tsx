@@ -94,36 +94,37 @@ export function PhotoAutoInspection() {
 
     const handleStartInspection = async () => {
         if (allPhotosCaptured) {
-          const clientService = new ClientService();
-          setLoading(true);
-      
-          
-          const photosToUpload = shapes.map(shape => {
-            const photo = photos[shape.id];
-            return {
-              uri: photo.uri,
-              name: `${shape.title}.jpg`,
-              type: 'image/jpeg',
-            };
-          });
-      
-          try {
-           
-            const uploadResponse = await clientService.startInspection(clientId, photosToUpload);
-      
-            if (uploadResponse) {
-              console.log('Inspeção iniciada com sucesso!');
+            const clientService = new ClientService();
+            setLoading(true);
+    
+            const photosToUpload = shapes.map((shape) => {
+                const photo = photos[shape.id];
+                if (photo) {
+                    return {
+                        uri: photo.uri,
+                        name: `${shape.title}.jpg`,
+                        type: 'image/jpeg',
+                    };
+                }
+                return null; 
+            }).filter(photo => photo !== null);
+    
+            try {
+                const uploadResponse = await clientService.startInspection(clientId, photosToUpload);
+    
+                if (uploadResponse) {
+                    console.log('Inspeção iniciada com sucesso!');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar fotos', error);
+                setErrorMessage('Erro ao enviar fotos. Tente novamente.');
+            } finally {
+                setLoading(false);
             }
-          } catch (error) {
-            console.error('Erro ao enviar fotos', error);
-            setErrorMessage('Erro ao enviar fotos. Tente novamente.');
-          } finally {
-            setLoading(false);
-          }
         } else {
-          setErrorMessage('Por favor, capture todas as fotos antes de finalizar.');
+            setErrorMessage('Por favor, capture todas as fotos antes de finalizar.');
         }
-      };
+    };
     
 
     return (

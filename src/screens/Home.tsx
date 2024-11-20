@@ -8,28 +8,27 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
 
-
 const apiService = new ClientApiService();
 const contractService = new ClientApiService();
 
 export function Home() {
     const navigation = useNavigation<AppNavigatorProps>();
-    const route = useRoute();
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchClientData = async () => {
+        const fetchClientAndContractData = async () => {
+            setLoading(true);
             try {
                 const cpf = await AsyncStorage.getItem('@user_cpf');
                 
                 if (cpf) {
-                    const response = await apiService.checkExistingCpf(cpf);
-                    if (response) {
-                        setClientData(response);  
+                    const clientResponse = await apiService.checkExistingCpf(cpf);
+                    if (clientResponse) {
+                        setClientData(clientResponse);  
         
-                        const contractResponse = await contractService.getContractByClientId(response.id);
-
+                        const contractResponse = await contractService.getContractByClientId(clientResponse.id);
                         if (contractResponse && contractResponse.id) {
                             setContract(contractResponse);
                         } else {
@@ -42,21 +41,22 @@ export function Home() {
                     console.log('CPF não encontrado');
                 }
             } catch (err) {
-                console.log('Erro ao buscar os dados do cliente ou contrato', err);
+                console.error('Erro ao buscar os dados do cliente ou contrato', err);
+            } finally {
+                setLoading(false);
             }
         };
     
-        fetchClientData();
+        fetchClientAndContractData();
     }, []);
-    
     
     const getVehicleInfo = (vehicleInfo: string) => {
         const parts = vehicleInfo.split(" - ");
-        const vehicleName = parts[0]; 
-        const vehicleModel = parts[1]; 
-        const licensePlate = parts[2]; 
-
-        return { vehicleName, vehicleModel, licensePlate };
+        return {
+            vehicleName: parts[0] || '',
+            vehicleModel: parts[1] || '',
+            licensePlate: parts[2] || '',
+        };
     };
 
     const vehicleInfo = contract ? getVehicleInfo(contract.vehicleName) : { vehicleName: '', vehicleModel: '', licensePlate: '' };
@@ -64,13 +64,14 @@ export function Home() {
     return (
         <VStack flex={1} bg="gray.100">
             <HomeHeader vehicleInfo={{
-                vehicleModel: '',
-                licensePlate: vehicleInfo.licensePlate
+                vehicleModel: vehicleInfo.vehicleModel,
+                licensePlate: vehicleInfo.licensePlate,
             }} />
             
             <VStack flex={1} justifyContent="center" alignItems="center" mt={-10}>
-               
-                {contract ? (
+                {loading ? (
+                    <Text>Carregando...</Text>
+                ) : contract ? (
                     <CarInfoCard
                         vehicleName={vehicleInfo.vehicleName}  
                         vehicleModel={vehicleInfo.vehicleModel} 
@@ -90,9 +91,7 @@ export function Home() {
                     <Button
                         title="Contato de Emergência"
                         variant="outline"
-                        onPress={() => {
-                            console.log('Contato de Emergência Pressionado');
-                        }}
+                        onPress={() => console.log('Contato de Emergência Pressionado')}
                         w="48%" 
                         bg="white" 
                         rounded="full"
@@ -103,10 +102,15 @@ export function Home() {
                         title="Vistoria"
                         variant="outline"
                         onPress={() => {
-                            navigation.navigate('inspection');
+                            if (contract) {
+                                navigation.navigate('inspection', { contract });
+                            } else {
+                                console.log('Contrato não carregado.');
+                            }
                         }}
                         w="48%" 
-                        bg="white"
+                        bg={contract ? "white" : "gray.300"}
+                        isDisabled={!contract}
                         rounded="full" 
                         _pressed={{ bg: 'gray.200' }} 
                     />
