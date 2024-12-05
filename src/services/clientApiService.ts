@@ -77,6 +77,33 @@ export default class ClientService extends ApiService {
     }
   }
 
+  public async getInspectionQuestionsByContractId(contractId: number): Promise<any | null> {
+    try {
+      const endpoint = `/inspections/inspection-by/${contractId}`;
+      const response = await this.get<any>(endpoint);
+  
+      if (response && response.length > 0) {
+        
+        const questions = response[0].questions;
+  
+        if (questions && questions.length > 0) {
+          return questions;
+        } else {
+          console.log('Nenhuma pergunta encontrada para este contrato.');
+          return null;
+        }
+      } else {
+        console.log('Nenhuma resposta encontrada para o contrato.');
+        return null;
+      }
+    } catch (error) {
+      console.log('Erro ao buscar perguntas de inspeção:', error);
+      this.handleError(error);
+      return null;
+    }
+  }
+  
+
   public async startInspection(inspectionId: number, photos: CustomFile[]): Promise<any> {
     try {
       const endpoint = `/inspections/${inspectionId}/start`;

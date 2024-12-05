@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { VStack, Center, Text, ScrollView, Box, Image, Pressable, HStack } from 'native-base';
 import { Button } from '@components/Button/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import ClientService from '@services/clientApiService';
+import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 
 interface Contract {
     id: number;
@@ -35,6 +36,7 @@ interface InspectionData {
 interface Shape {
     id: string;
     title: string;
+    description: string;
     image: any;
 }
 
@@ -43,24 +45,43 @@ interface Photos {
 }
 
 export function PhotoAutoInspection() {
-    const navigation = useNavigation();
+
+    const navigationProp = useNavigation<AuthNavigatorAuthProps>(); 
     const route = useRoute();
+
     const contrat = route.params as InspectionData;
     const clientId = contrat.contract.id;
 
-    const shapes: Shape[] = [
-        { id: '1', title: 'Frente', image: require('../assets/frente.jpg') },
-        { id: '2', title: 'Traseira', image: require('../assets/traseira.jpg') },
-        { id: '3', title: 'Lateral Dianteira Direita', image: require('../assets/direita.jpg') },
-        { id: '4', title: 'Lateral Dianteira Esquerda', image: require('../assets/esquerda.jpg') },
-        { id: '5', title: 'Banco Traseiro', image: require('../assets/bancodianteiro.png') },
-        { id: '6', title: 'Banco Dianteiro', image: require('../assets/bancotraseiro.jpg') },
-        { id: '7', title: 'Painel', image: require('../assets/painel.jpg') },
-    ];
-
+    const [shapes, setShapes] = useState<Shape[]>([]);
     const [photos, setPhotos] = useState<Photos>({});
+
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchInspectionQuestions = async () => {
+            try {
+                const clientService = new ClientService();
+                const questions = await clientService.getInspectionQuestionsByContractId(clientId);
+                
+                if (questions) {
+                    const formattedShapes = questions.map((question: any) => ({
+                        id: question.id.toString(),
+                        title: question.question.description,
+                        description: question.question.description,
+                        image: require('../assets/photos.png'),
+                    }));
+                    setShapes(formattedShapes);
+                } else {
+                    setErrorMessage('Não foi possível carregar as perguntas de inspeção.');
+                }
+            } catch (error) {
+                setErrorMessage('Erro ao carregar perguntas. Tente novamente.');
+            }
+        };
+
+        fetchInspectionQuestions();
+    }, [clientId]);
 
     const handleCapturePhoto = async (shapeId: string) => {
         try {
@@ -113,7 +134,7 @@ export function PhotoAutoInspection() {
                 const uploadResponse = await clientService.startInspection(clientId, photosToUpload);
     
                 if (uploadResponse) {
-                    console.log('Inspeção iniciada com sucesso!');
+                    navigationProp.navigate('photoAutoInspectionFinished', { contractId: clientId });
                 }
             } catch (error) {
                 console.error('Erro ao enviar fotos', error);
@@ -125,7 +146,6 @@ export function PhotoAutoInspection() {
             setErrorMessage('Por favor, capture todas as fotos antes de finalizar.');
         }
     };
-    
 
     return (
         <Box flex={1} bg="green.600">
@@ -153,8 +173,9 @@ export function PhotoAutoInspection() {
                                         borderRadius="md"
                                         shadow={2}
                                         width="100%"
-                                        maxWidth="150px"
+                                        maxWidth="160px"
                                         alignItems="center"
+                                        justifyContent="center"
                                     >
                                         <Image
                                             source={photos[shape.id] ? { uri: photos[shape.id].uri } : shape.image}
@@ -163,8 +184,8 @@ export function PhotoAutoInspection() {
                                             resizeMode="cover"
                                             marginBottom={2}
                                         />
-                                        <Text color="green.600" fontSize="lg">
-                                            {shape.title}
+                                        <Text color="green.600" fontSize="sm" textAlign="center" numberOfLines={2}>
+                                            {shape.description}
                                         </Text>
                                     </Box>
                                 </Pressable>
