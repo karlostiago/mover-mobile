@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HStack, VStack, Text } from 'native-base';
+import { HStack, VStack, Text, Box } from 'native-base';
 import { HomeHeader } from "@components/HomeHeader/HomeHeader";
 import { Button } from "@components/Button/Button"; 
 import { CarInfoCard } from "@components/CarInfoCard/CarInfoCard"; 
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
+import ModalInfo from '@components/ModalInfo/ModalInfo';
 
 const apiService = new ClientApiService();
 const contractService = new ClientApiService();
@@ -16,6 +17,7 @@ export function Home() {
     const [clientData, setClientData] = useState<any>(null);
     const [contract, setContract] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isModalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         const fetchClientAndContractData = async () => {
@@ -68,6 +70,10 @@ export function Home() {
             console.log('Contrato não carregado');
         }
     };
+
+    const handleEmergencyContactPress = () => setModalVisible(true);
+    const handleCloseModal = () => setModalVisible(false);
+
     return (
         <VStack flex={1} bg="gray.100">
             <HomeHeader vehicleInfo={{
@@ -98,7 +104,7 @@ export function Home() {
                     <Button
                         title="Contato de Emergência"
                         variant="outline"
-                        onPress={() => console.log('Contato de Emergência Pressionado')}
+                        onPress={handleEmergencyContactPress}
                         w="48%" 
                         bg="white" 
                         rounded="full"
@@ -117,6 +123,46 @@ export function Home() {
                     />
                 </HStack>
             </VStack>
+            <ModalInfo
+                isVisible={isModalVisible}
+                message={{
+                    title: 'Furto ou Roubo',
+                    body: (
+                        <VStack space={4} alignItems="center" justifyContent="center" w="80%" p={4}>
+                            <Text fontSize="lg" fontWeight="bold" color="black">Furto ou Roubo</Text>
+
+                            <Box
+                                borderColor="green.500"
+                                borderWidth={1}
+                                borderRadius="md"
+                                px={4}
+                                py={2}
+                                w="100%"
+                                alignItems="center"
+                            >
+                                <Text fontSize="md" color="black">0800 607 2007</Text>
+                            </Box>
+
+                            <Text fontSize="md" color="black">ou</Text>
+
+                            <Text fontSize="md" fontWeight="bold" color="green.500">Assistência 24h</Text>
+
+                            <Box
+                                borderColor="green.500"
+                                borderWidth={1}
+                                borderRadius="md"
+                                px={4}
+                                py={2}
+                                w="100%"
+                                alignItems="center"
+                            >
+                                <Text fontSize="md" color="black">0800 948 488</Text>
+                            </Box>
+                        </VStack>
+                    ),
+                }}
+                onClose={handleCloseModal}
+            />
         </VStack>
     );
 }
