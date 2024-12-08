@@ -2,52 +2,59 @@ import React, { useState, useEffect } from 'react';
 import { VStack, Center, Text, Box, HStack, FlatList } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from '@components/Button/Button';
-import { AppNavigatorProps } from '@routes/app.routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ClientApiService from '@services/clientApiService';
 import { AuthNavigatorAuthProps } from '@routes/auth.routes';
 import { Pressable } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const apiService = new ClientApiService();
 const contractService = new ClientApiService();
 
 export function Inspection() {
-    const navigation = useNavigation<AppNavigatorProps>();
+
     const navigationProp = useNavigation<AuthNavigatorAuthProps>();
     const [clientData, setClientData] = useState<any>(null);
+
     const [contract, setContract] = useState<any>(null);
     const [inspections, setInspections] = useState<any[]>([]);
 
-    useEffect(() => {
-        const fetchClientData = async () => {
-            try {
-                const cpf = await AsyncStorage.getItem('@user_cpf');
+    const fetchClientData = async () => {
+        try {
+            const cpf = await AsyncStorage.getItem('@user_cpf');
 
-                if (cpf) {
-                    const response = await apiService.checkExistingCpf(cpf);
-                    if (response) {
-                        setClientData(response);
+            if (cpf) {
+                const response = await apiService.checkExistingCpf(cpf);
+                if (response) {
+                    setClientData(response);
 
-                        const contractResponse = await contractService.getContractByClientId(response.id);
-                        if (contractResponse) {
-                            setContract(contractResponse);
+                    const contractResponse = await contractService.getContractByClientId(response.id);
+                    if (contractResponse) {
+                        setContract(contractResponse);
 
-                            const inspectionsResponse = await contractService.getInspectionDataByContractId(contractResponse.id);
-                            if (inspectionsResponse && inspectionsResponse.length > 0) {
-                                setInspections(inspectionsResponse);
-                            }
-
-                            await AsyncStorage.setItem('@contract_data', JSON.stringify(contractResponse));
+                        const inspectionsResponse = await contractService.getInspectionDataByContractId(contractResponse.id);
+                        if (inspectionsResponse && inspectionsResponse.length > 0) {
+                            setInspections(inspectionsResponse);
                         }
                     }
-                }
-            } catch (err) {
-                console.error('Erro ao buscar os dados do cliente ou contrato', err);
-            }
-        };
 
+                    await AsyncStorage.setItem('@contract_data', JSON.stringify(contractResponse));
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao buscar os dados do cliente ou contrato', err);
+        }
+    };
+
+    useEffect(() => {
         fetchClientData();
-    }, []);
+    }, []); 
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchClientData();
+        }, [])
+    );
 
     const handleNewInspection = () => {
         if (contract) {
@@ -137,16 +144,16 @@ export function Inspection() {
                                             Data: {formatDate(item.date)}
                                         </Text>
                                         <Text fontSize="md" color="gray.600">
-                                            Status: 
+                                            Status:
                                             <Text
                                                 color={
                                                     item.inspectionStatus === 'REJECTED'
                                                         ? 'red.500'
                                                         : item.inspectionStatus === 'APPROVED'
-                                                        ? 'green.500'
-                                                        : item.inspectionStatus === 'UNDER_REVIEW'
-                                                        ? 'blue.500'
-                                                        : 'gray.600'
+                                                            ? 'green.500'
+                                                            : item.inspectionStatus === 'UNDER_REVIEW'
+                                                                ? 'blue.500'
+                                                                : 'gray.600'
                                                 }
                                                 fontWeight={item.inspectionStatus === 'REJECTED' ? 'bold' : 'normal'}
                                             >
@@ -157,7 +164,10 @@ export function Inspection() {
                                 </Pressable>
                             )}
                             contentContainerStyle={{ paddingBottom: 20 }}
+                            showsVerticalScrollIndicator={false}
+                            showsHorizontalScrollIndicator={false}
                         />
+
                     )}
                 </Box>
 
